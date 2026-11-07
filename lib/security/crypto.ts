@@ -14,7 +14,12 @@ function keys(): { id: string; key: Buffer }[] {
     if (!id || key.length !== 32) throw new Error("TOKEN_ENCRYPTION_KEYS entries must be keyId:<32-byte base64>");
     return { id, key };
   });
-  if (!list.length) throw new Error("TOKEN_ENCRYPTION_KEYS is not set");
+  if (!list.length) {
+    // Demo sandbox only: derive a throwaway key so the connect/revoke flow can be exercised.
+    const demo = process.env.DEMO_MODE === "true" || !process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (demo) return [{ id: "demo", key: createHash("sha256").update(`demo-token-key:${process.env.SESSION_SECRET ?? ""}`).digest() }];
+    throw new Error("TOKEN_ENCRYPTION_KEYS is not set");
+  }
   return list;
 }
 

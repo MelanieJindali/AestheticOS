@@ -41,7 +41,7 @@ export class MemoryStore implements Store {
     let rows = [...bucket(userId, table).values()] as unknown as Tables[K][];
     if (opts.where) {
       const w = Object.entries(opts.where);
-      rows = rows.filter((r) => w.every(([k, v]) => (r as Record<string, unknown>)[k] === v));
+      rows = rows.filter((r) => w.every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v));
     }
     if (opts.orderBy) {
       const k = opts.orderBy;

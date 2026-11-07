@@ -106,7 +106,8 @@ export function localCreative(brand: BrandProfile, req: GenerateRequest): { core
 
   let hook = fill(frame.hook, vars);
   let body = fill(frame.body, vars);
-  let idea = fill(pick(IDEA_BANK[pillar], rand), vars);
+  const bank = IDEA_BANK[pillar].filter((i) => (templateType === "before-after") === /before\/after/i.test(i));
+  let idea = fill(pick(bank.length ? bank : IDEA_BANK[pillar], rand), vars);
   if (req.note) {
     // The note has already been redacted upstream (see app/actions/posts.ts).
     idea = req.note.slice(0, 140);
@@ -241,8 +242,10 @@ export function planBatch(startYmd: string, days = 30, postsPerWeek = 5): BatchP
   });
 }
 
-export function generateBatch(brand: BrandProfile, opts: { startYmd: string; days?: number; postsPerWeek?: number; platforms: Platform[]; seed?: number }): GeneratedPost[] {
-  const plan = planBatch(opts.startYmd, opts.days ?? 30, opts.postsPerWeek ?? 5);
+export function generateBatch(brand: BrandProfile, opts: { startYmd: string; days?: number; postsPerWeek?: number; platforms: Platform[]; seed?: number; avoidBeforeAfter?: boolean }): GeneratedPost[] {
+  const plan = planBatch(opts.startYmd, opts.days ?? 30, opts.postsPerWeek ?? 5).map((it) =>
+    opts.avoidBeforeAfter && it.templateType === "before-after" ? { ...it, templateType: "service-spotlight" as TemplateType } : it,
+  );
   return plan.map((item, i) => {
     const serviceId = brand.services[i % Math.max(1, brand.services.length)]?.id;
     const req: GenerateRequest = { source: "batch", pillar: item.pillar, templateType: item.templateType, platforms: opts.platforms, dateYmd: item.dateYmd, seed: (opts.seed ?? 7) * 1000 + i, serviceId };

@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* App theme. Brand colours are injected per user as CSS variables in the app
+   layout (see lib/brand/theme.ts), so the whole OS gently adapts to the brand. */
+:root {
+  --c-primary: #8a5a5f;
+  --c-secondary: #e8cfc8;
+  --c-accent: #c4a265;
+  --c-bg: #fbf6f3;
+  --c-ink: #2b1f20;
+  --c-on-primary: #ffffff;
+  --c-surface: #ffffff;
+  --c-muted: color-mix(in oklab, var(--c-ink) 60%, var(--c-bg));
+  --c-line: color-mix(in oklab, var(--c-ink) 12%, var(--c-bg));
+  --c-soft: color-mix(in oklab, var(--c-secondary) 35%, var(--c-bg));
+  --font-heading: var(--font-playfair), Georgia, serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-primary: var(--c-primary);
+  --color-secondary: var(--c-secondary);
+  --color-accent: var(--c-accent);
+  --color-bg: var(--c-bg);
+  --color-ink: var(--c-ink);
+  --color-surface: var(--c-surface);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-soft: var(--c-soft);
+  --color-on-primary: var(--c-on-primary);
+  --font-heading: var(--font-heading);
+  --font-sans: var(--font-body);
+}
+
+html { -webkit-text-size-adjust: 100%; }
+html, body { overflow-x: clip; }
+body {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-heading); letter-spacing: -0.01em; }
+
+:focus-visible { outline: 3px solid var(--c-accent); outline-offset: 2px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+.safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.75rem); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@media print {
+  nav, .no-print { display: none !important; }
+  body { background: white; }
+}

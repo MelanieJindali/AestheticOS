@@ -1,0 +1,50 @@
+{
+  "name": "aesthetic-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A calm, secure business operating system for health & beauty solopreneurs.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db": "bash scripts/test-db.sh",
+    "test:e2e": "playwright test --trace off",
+    "seed:sql": "tsx scripts/generate-seed-sql.ts > supabase/seed.sql",
+    "audit:deps": "npm audit --audit-level=high"
+  },
+  "engines": {
+    "node": ">=20.9"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
+    "@pdf-lib/fontkit": "^1.1.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "16.4.5",
+    "opentype.js": "^2.0.0",
+    "pdf-lib": "^1.17.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "^0.0.1",
+    "web-push": "^4.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22",
+    "@types/opentype.js": "*",
+    "@types/pg": "*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/web-push": "*",
+    "pg": "^8",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4",
+    "typescript": "^5.9",
+    "vitest": "^5.1.0"
+  }
+}

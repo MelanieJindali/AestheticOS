@@ -1,0 +1,33 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests (redaction, compliance, gateway, security)
+        run: npm test
+      - name: Database tests (RLS, consent gate, audit log)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql >/dev/null
+          npm run test:db
+      - name: Dependency audit
+        run: npm audit --audit-level=high --omit=dev
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Build
+        run: npm run build
+        env: { DEMO_MODE: "true" }
+      - name: Acceptance tests (demo mode)
+        run: npx playwright install --with-deps chromium && npm run test:e2e

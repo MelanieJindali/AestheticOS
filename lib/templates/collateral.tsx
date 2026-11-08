@@ -34,7 +34,7 @@ export function renderCollateral(kind: CollateralKind, brand: B, fonts: Template
                 <div style={{ display: "flex", ...head, fontSize: 40 }}>{s.name}</div>
                 <div style={{ display: "flex", fontSize: 24, opacity: 0.7 }}>{`${s.durationMin} min`}</div>
               </div>
-              <div style={{ display: "flex", flexGrow: 1, borderBottom: `2px dotted ${mix(p.neutralDark, p.neutralLight, 0.6)}`, marginBottom: 14 }} />
+              <div style={{ display: "flex", flexGrow: 1, borderBottom: `2px dashed ${mix(p.neutralDark, p.neutralLight, 0.6)}`, marginBottom: 14 }} />
               <div style={{ display: "flex", fontSize: 38, color: p.primary, fontWeight: 600 }}>{s.price ? formatMoney(s.price, brand) : "Free"}</div>
             </div>
           ))}

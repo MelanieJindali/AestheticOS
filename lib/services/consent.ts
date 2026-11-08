@@ -17,7 +17,12 @@ export const ConsentInput = z.object({
   allowFace: z.boolean(),
   allowTagging: z.boolean(),
   months: z.coerce.number().int().min(1).max(36),
-  signatureSvg: z.string().min(40).max(150_000).refine((s) => /^<svg[\s>]/.test(s) && !/<script|on\w+=|javascript:|<foreignObject|xlink:href|href=/i.test(s), "Invalid signature"),
+  // Rebuilt from path data only, so no client-supplied markup is ever stored.
+  signatureSvg: z.string().max(150_000).transform((svg, ctx) => {
+    const paths = [...svg.matchAll(/\sd="([MLml0-9.\s-]{3,20000})"/g)].map((m) => m[1]).slice(0, 200);
+    if (!paths.length) { ctx.addIssue({ code: "custom", message: "Please sign in the box" }); return z.NEVER; }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">${paths.map((d) => `<path d="${d}" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`).join("")}</svg>`;
+  }),
   agreed: z.literal(true),
 });
 

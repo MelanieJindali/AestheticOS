@@ -49,11 +49,11 @@ describe("AI gateway — no PII in outbound LLM requests", () => {
       priceTier: "mid", idealClient: "students", personality: ["playful"], moods: ["y2k-glam"], extractedColors: [], currency: "GBP", locale: "en-GB", timezone: "Europe/London",
     });
     _setProvider({ name: "test", complete: async () => ({ nope: true }) });
-    const r = await runAi({ store, userId, brand, settings: { aiProvider: "claude", museCanUseClientData: false } }, "creative", "hi", {});
+    const r = await runAi({ store, userId, brand, settings: { aiProvider: "claude", museCanUseClientData: false } }, "creative", "UNIQUE-INSTRUCTION-TEXT-42", {});
     expect(r.data).toBeNull();
     expect(r.provider).toBe("local");
     const log = await store.list("audit_log", userId);
     expect(log.some((l) => l.action === "ai.request")).toBe(true);
-    expect(JSON.stringify(log)).not.toContain("hi");
+    expect(JSON.stringify(log)).not.toContain("UNIQUE-INSTRUCTION-TEXT-42");
   });
 });

@@ -12,6 +12,7 @@ export default async function ConsentList() {
   return (
     <>
       <PageHeader title="Client consent" subtitle="Signed permission for before/afters, testimonials and client photos. We store an alias only: no names, phone numbers or emails." action={<LinkButton href="/consent/new">New consent</LinkButton>} />
+      <LinkButton href="/consent/new" className="sm:hidden w-full mb-4">New consent</LinkButton>
       {records.length === 0 ? (
         <Empty title="No consent records yet" action={<LinkButton href="/consent/new">Collect your first signature</LinkButton>}>When a client is happy to be featured, hand them your phone. They read a plain-English form and sign with a finger. It takes about 30 seconds.</Empty>
       ) : (

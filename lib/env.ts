@@ -29,7 +29,10 @@ export const env = {
 /** Demo mode: in-memory sandbox per visitor, seeded with the lash-studio demo. No real data. */
 export function isDemoMode(): boolean {
   if (process.env.DEMO_MODE === "true") return true;
-  return !process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL) return false;
+  // Never fall back to the throwaway demo store silently in production.
+  if (process.env.NODE_ENV === "production") throw new Error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL, or DEMO_MODE=true for a demo deployment.");
+  return true;
 }
 
 export function aiEnabled(): boolean {

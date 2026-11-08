@@ -121,6 +121,13 @@ function Column({ children, gap, grow, justify = "flex-start", style }: { childr
   return <div style={{ display: "flex", flexDirection: "column", gap, flexGrow: grow ? 1 : 0, justifyContent: justify, ...style }}>{children}</div>;
 }
 
+function Star({ size, color }: { size: number; color: string }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill={color} /></svg>;
+}
+function Sparkle({ size, color }: { size: number; color: string }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24"><path d="M12 1l2.2 8.8L23 12l-8.8 2.2L12 23l-2.2-8.8L1 12l8.8-2.2z" fill={color} /></svg>;
+}
+
 // ---------- per-type bodies ----------
 
 const BODIES: Record<TemplateType, (c: Ctx) => ReactElement> = {
@@ -204,7 +211,7 @@ const BODIES: Record<TemplateType, (c: Ctx) => ReactElement> = {
         <div style={{ display: "flex", fontFamily: c.fonts.heading, fontSize: Math.round(220 * u), lineHeight: 0.7, color: c.p.accent }}>“</div>
         <Headline ctx={c} size={0.72} color={c.p.neutralDark}>{s.headline ?? "I've never felt so looked after."}</Headline>
         <BodyText ctx={c} size={0.85} style={{ color: c.p.primary, fontWeight: 600 }}>{s.subhead ?? "— A happy client"}</BodyText>
-        <div style={{ display: "flex", fontSize: Math.round(40 * u), color: c.p.accent, letterSpacing: Math.round(6 * u) }}>★★★★★</div>
+        <div style={{ display: "flex", gap: Math.round(8 * u) }}>{[0, 1, 2, 3, 4].map((i) => <Star key={i} size={Math.round(40 * u)} color={c.p.accent} />)}</div>
         {s.cta && <Cta ctx={c}>{s.cta}</Cta>}
       </Column>
     );
@@ -249,7 +256,7 @@ const BODIES: Record<TemplateType, (c: Ctx) => ReactElement> = {
     const { slots: s, u, p } = c;
     return (
       <Column gap={Math.round(26 * u)} grow justify="center" style={{ alignItems: "center", textAlign: "center" }}>
-        <div style={{ display: "flex", fontSize: Math.round(64 * u), color: p.accent }}>✦</div>
+        <Sparkle size={Math.round(64 * u)} color={p.accent} />
         <Kicker ctx={c}>{s.subhead ?? "Seasonal"}</Kicker>
         <Headline ctx={c} size={1.05}>{s.headline ?? "Holiday glow season"}</Headline>
         {s.body && <BodyText ctx={c} style={{ textAlign: "center", justifyContent: "center" }}>{s.body}</BodyText>}

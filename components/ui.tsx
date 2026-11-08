@@ -35,7 +35,7 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
         <h1 className="text-3xl md:text-4xl text-primary">{title}</h1>
         {subtitle && <p className="mt-1 text-muted max-w-prose">{subtitle}</p>}
       </div>
-      {action}
+      {action && <div className="hidden sm:block shrink-0">{action}</div>}
     </header>
   );
 }

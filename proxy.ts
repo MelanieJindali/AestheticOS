@@ -6,7 +6,7 @@ import { createServerClient } from "@supabase/ssr";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-const DEMO = process.env.DEMO_MODE === "true" || !SUPABASE_URL;
+const DEMO = process.env.DEMO_MODE === "true" || !SUPABASE_URL; // app code refuses to run without Supabase in production unless DEMO_MODE=true
 
 function csp(nonce: string) {
   const dev = process.env.NODE_ENV === "development";

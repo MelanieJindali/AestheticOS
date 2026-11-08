@@ -29,7 +29,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageHeader title="Content" subtitle={sp.welcome ? "Your first week is drafted ✨ Review each post, then approve & schedule." : "Ideas → Drafts → Needs review → Approved → Scheduled → Published."}
-        action={<LinkButton href="/posts/batch" variant="secondary" className="hidden sm:inline-flex">Batch a month</LinkButton>} />
+        action={<LinkButton href="/posts/batch" variant="secondary">Batch a month</LinkButton>} />
       <Card className="mb-5 !p-4">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-semibold">Queue health {health.score}/100</span>

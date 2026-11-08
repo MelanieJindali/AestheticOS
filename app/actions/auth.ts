@@ -41,7 +41,7 @@ export async function sendCode(_prev: R | null, formData: FormData): Promise<R> 
   const { error } = await sb.auth.signInWithOtp({ email: parsed.data, options: { shouldCreateUser: true, emailRedirectTo: `${env.appUrl}/auth/confirm` } });
   // Same response whether or not the account exists (no account enumeration).
   if (error && error.status !== 429) console.error("otp send", error.status);
-  return { ok: true, message: "If that email can sign in, a 6-digit code is on its way.", data: { email: parsed.data } };
+  return { ok: true, message: "Check your email. Tap the sign-in link (open it in this browser), or enter the 6-digit code if your email shows one.", data: { email: parsed.data } };
 }
 
 export async function verifyCode(_prev: R | null, formData: FormData): Promise<R> {

@@ -20,7 +20,7 @@ async function handle(req: NextRequest) {
   const db = supabaseAdmin();
   const horizon = new Date(Date.now() + 5 * 60_000).toISOString();
   const { data: due, error } = await db.from("schedule_items").select("id,user_id,platform,scheduled_at,mode").eq("state", "pending").lte("scheduled_at", horizon).limit(500);
-  if (error) return NextResponse.json({ ok: false }, { status: 500 });
+  if (error) { console.error("cron query failed", error.code, error.message); return NextResponse.json({ ok: false }, { status: 500 }); }
 
   if (env.vapidPublic && env.vapidPrivate) webpush.setVapidDetails(env.vapidSubject, env.vapidPublic, env.vapidPrivate);
   let pushed = 0, emailed = 0;

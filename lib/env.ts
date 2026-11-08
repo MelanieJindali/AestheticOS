@@ -26,11 +26,16 @@ export const env = {
   get emailFrom() { return process.env.EMAIL_FROM ?? ""; },
 };
 
-/** Demo mode: in-memory sandbox per visitor, seeded with the lash-studio demo. No real data. */
+/**
+ * Demo mode: in-memory sandbox per visitor, seeded with the lash-studio demo. No real data.
+ * On when DEMO_MODE=true, or when Supabase isn't configured in development, during
+ * the build, or on Vercel preview deployments. Unconfigured production refuses to run
+ * rather than silently storing real users' data in the throwaway sandbox.
+ */
 export function isDemoMode(): boolean {
   if (process.env.DEMO_MODE === "true") return true;
   if (process.env.NEXT_PUBLIC_SUPABASE_URL) return false;
-  // Never fall back to the throwaway demo store silently in production.
+  if (process.env.NEXT_PHASE === "phase-production-build" || process.env.VERCEL_ENV === "preview") return true;
   if (process.env.NODE_ENV === "production") throw new Error("Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL, or DEMO_MODE=true for a demo deployment.");
   return true;
 }

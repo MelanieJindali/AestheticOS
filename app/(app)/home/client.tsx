@@ -17,7 +17,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
       {tasks.map((t) => (
         <li key={t.id}>
           <label className="flex gap-3 items-start min-h-11 py-1.5 cursor-pointer">
-            <input type="checkbox" defaultChecked={t.done} disabled={pending} className="mt-0.5 h-5 w-5 accent-[var(--c-primary)]" onChange={(e) => start(async () => { await toggleTaskAction(t.id, e.target.checked); router.refresh(); })} />
+            <input type="checkbox" defaultChecked={t.done} disabled={pending} className="mt-0.5 h-5 w-5 accent-[var(--c-primary)] shrink-0" onChange={(e) => start(async () => { await toggleTaskAction(t.id, e.target.checked); router.refresh(); })} />
             <span className={t.done ? "line-through text-muted text-sm" : "text-sm"}>{t.title}{t.why && <span className="block text-xs text-muted">{t.why}</span>}</span>
           </label>
         </li>
@@ -43,8 +43,8 @@ export function AcceptSuggestion({ title, why, goalId }: { title: string; why: s
   const [done, setDone] = useState(false);
   const toast = useToast();
   return (
-    <Button variant="secondary" className="min-h-11 text-sm" disabled={done} onClick={async () => { const r = await addTaskAction({ title, why, origin: "muse", goalId }); if (r.ok) { setDone(true); toast({ message: "Added to your tasks", tone: "ok" }); } }}>
-      {done ? "Added ✓" : "Add as task"}
+    <Button variant="secondary" className="min-h-11 text-sm" disabled={done} onClick={async () => { const r = await addTaskAction({ title, why, origin: "muse", goalId }); if (r.ok) { setDone(true); toast({ message: "Saved for later in your tasks.", tone: "ok" }); } }}>
+      {done ? "Added to your tasks" : "Not today, remind me"}
     </Button>
   );
 }
@@ -76,7 +76,7 @@ export function QuickCapture() {
           <button type="button" className="text-sm underline" onClick={() => { setImage(undefined); setPreview(undefined); }}>Remove photo</button>
         </div>
       ) : (
-        <ImageUpload label="📷 Add a photo" onUploaded={(ref, url) => { setImage(ref); setPreview(url); }} />
+        <ImageUpload label="Add a photo" onUploaded={(ref, url) => { setImage(ref); setPreview(url); }} />
       )}
       <Button disabled={pending || (!note.trim() && !image)}>{pending ? "Saving…" : "Turn into a content idea"}</Button>
     </form>

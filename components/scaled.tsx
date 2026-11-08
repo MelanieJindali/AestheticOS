@@ -14,7 +14,7 @@ export function Scaled({ width, height, children, label, className }: { width: n
     return () => ro.disconnect();
   }, [width]);
   return (
-    <div ref={box} role="img" aria-label={label} className={`relative w-full overflow-hidden rounded-2xl ring-1 ring-line ${className ?? ""}`} style={{ aspectRatio: `${width} / ${height}` }}>
+    <div ref={box} role="img" aria-label={label} className={`relative w-full overflow-hidden rounded-[14px] ${className ?? ""}`} style={{ aspectRatio: `${width} / ${height}` }}>
       <div aria-hidden style={{ width, height, transform: `scale(${scale})`, transformOrigin: "top left", position: "absolute", inset: 0 }}>{children}</div>
     </div>
   );

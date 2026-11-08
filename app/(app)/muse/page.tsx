@@ -1,5 +1,6 @@
 import { appCtx } from "@/lib/action-ctx";
 import { PageHeader } from "@/components/ui";
+import { Icon } from "@/components/icons";
 import { llmAvailable } from "@/lib/ai/gateway";
 import { pricingCheck } from "@/lib/muse/pricing";
 import { monthlyReview } from "@/lib/muse/suggest";
@@ -20,7 +21,7 @@ export default async function Muse({ searchParams }: { searchParams: Promise<{ t
   const pricing = pricingCheck(brand);
   return (
     <>
-      <PageHeader title="Muse" subtitle="Your business assistant. Muse explains its reasoning, never publishes without you, and never gives medical advice." />
+      <PageHeader eyebrow="Your business companion" title={<>Muse, <em>at your side</em></>} subtitle="Muse explains its thinking, never publishes without you, and never gives medical advice." action={<span className="inline-flex items-center gap-1.5 text-sm text-muted"><Icon name="lock" size={16} /> Private</span>} />
       <MuseTools
         initialTab={sp.tab ?? (prefill ? "validate" : "ideate")}
         prefill={prefill}

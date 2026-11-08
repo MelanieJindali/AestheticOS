@@ -18,7 +18,7 @@ export function SignInForm() {
           <input type="checkbox" name="age" className="mt-1 h-5 w-5" required />
           <span>I&apos;m 18 or over and using Aesthetic OS for my business. I agree to the <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</span>
         </label>
-        {sent?.error && <p role="alert" className="text-sm text-red-700">{sent.error}</p>}
+        {sent?.error && <p role="alert" className="text-sm text-danger">{sent.error}</p>}
         <Button disabled={sending}>{sending ? "Sending…" : "Email me a code"}</Button>
       </form>
     );
@@ -28,7 +28,7 @@ export function SignInForm() {
       <p className="text-sm" role="status">{sent?.message}</p>
       <input type="hidden" name="email" value={email} />
       <Field label="6-digit code" htmlFor="code"><Input id="code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6,8}" maxLength={8} required /></Field>
-      {verified?.error && <p role="alert" className="text-sm text-red-700">{verified.error}</p>}
+      {verified?.error && <p role="alert" className="text-sm text-danger">{verified.error}</p>}
       <Button disabled={verifying}>{verifying ? "Checking…" : "Continue"}</Button>
     </form>
   );

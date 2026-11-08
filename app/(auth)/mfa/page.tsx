@@ -14,7 +14,7 @@ export default async function Mfa() {
   const verified = data?.totp?.find((f) => f.status === "verified");
   return (
     <>
-      <h1 className="text-3xl text-primary">{verified ? "Enter your code" : "Protect your account"}</h1>
+      <h1 className="text-[34px]">{verified ? "Enter your code" : "Protect your account"}</h1>
       <p className="mt-1 text-sm text-muted">
         {verified
           ? "Open your authenticator app and enter the 6-digit code."

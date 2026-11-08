@@ -72,7 +72,7 @@ export function NewPostForm({ services, initial }: { services: { id: string; nam
       </Field>
 
       {(source === "photo" || templateType === "service-spotlight" || templateType === "meet-the-artist" || templateType === "product") && !isBA && (
-        <ImageUpload label={image ? "✓ Photo added (tap to replace)" : "📷 Add a photo"} onUploaded={(ref) => setImage(ref)} />
+        <ImageUpload label={image ? "Photo added · tap to replace" : "Add a photo"} onUploaded={(ref) => setImage(ref)} />
       )}
 
       <fieldset>

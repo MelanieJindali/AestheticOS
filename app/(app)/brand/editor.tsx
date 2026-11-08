@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/icons";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { BrandProfile, Palette } from "@/lib/types";
@@ -51,7 +52,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
     <div className="flex flex-col gap-6">
       {/* Palette */}
       <Card>
-        <div className="flex items-center justify-between gap-2"><h2 className="text-2xl">Colour palette</h2>
+        <div className="flex items-center justify-between gap-2"><h2 className="text-[28px]">Colour palette</h2>
           <Button disabled={pending || Object.values(palette).some((c) => !isHex(c))} onClick={() => {
             const prev = brand.palette;
             const fixed = enforcePaletteContrast(palette);
@@ -60,12 +61,13 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
             save({ palette: fixed }, "Palette", () => { setPalette(prev); save({ palette: prev }, "Previous palette"); });
           }}>Save palette</Button>
         </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6">
+        <div className="mt-5 flex gap-3" aria-hidden>{(Object.keys(PALETTE_LABELS) as (keyof Palette)[]).map((k) => <div key={k} className="flex-1"><div className="arch h-24 md:h-32 border border-line" style={{ background: palette[k] }} /><p className="eyebrow mt-2 !text-[10px] truncate">{PALETTE_LABELS[k]}</p></div>)}</div>
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {(Object.keys(PALETTE_LABELS) as (keyof Palette)[]).map((k) => {
               const rgb = isHex(palette[k]) ? hexToRgb(palette[k]) : null;
               return (
-                <div key={k} className="flex items-center gap-3 rounded-2xl border border-line p-2">
+                <div key={k} className="flex items-center gap-3 rounded-[var(--radius-item)] border border-line bg-surface p-2">
                   <input type="color" aria-label={`${PALETTE_LABELS[k]} colour picker`} value={isHex(palette[k]) ? palette[k] : "#000000"} onChange={(e) => setColor(k, e.target.value)} className="h-12 w-12 rounded-xl border-0 bg-transparent" />
                   <div className="flex-1">
                     <label className="text-xs text-muted" htmlFor={`hex-${k}`}>{PALETTE_LABELS[k]}</label>
@@ -92,7 +94,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Typography */}
       <Card>
-        <div className="flex items-center justify-between"><h2 className="text-2xl">Typography</h2>
+        <div className="flex items-center justify-between"><h2 className="text-[28px]">Typography</h2>
           <Button variant="secondary" disabled={pending || pairingId === brand.typography.pairingId} onClick={() => { const prev = brand.typography.pairingId; save({ typography: { pairingId, heading: pairing.heading, body: pairing.body } }, "Fonts", () => { setPairingId(prev); const pp = pairingById(prev); save({ typography: { pairingId: prev, heading: pp.heading, body: pp.body } }, "Previous fonts"); }); }}>Save fonts</Button>
         </div>
         <p className="text-sm text-muted">All free to use commercially (SIL Open Font License).</p>
@@ -108,13 +110,13 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Logos */}
       <Card>
-        <h2 className="text-2xl">Logo concepts</h2>
+        <h2 className="text-[28px]">Logo concepts</h2>
         <p className="text-sm text-muted">Wordmark, monogram and icon in light and dark. SVG downloads have the text outlined, so they look identical in Canva, Illustrator or at the printers.</p>
         <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
           {(["wordmark", "monogram", "icon"] as LogoKind[]).flatMap((kind) => (["light", "dark"] as LogoTheme[]).map((theme) => {
             const svg = logoSvgPreview(logoSpec(live, kind, theme), (f) => cssFontStack(f, f === pairing.heading));
             return (
-              <figure key={`${kind}-${theme}`} className="rounded-2xl border border-line overflow-hidden">
+              <figure key={`${kind}-${theme}`} className="rounded-[var(--radius-item)] border border-line bg-surface overflow-hidden">
                 <div className={kind === "wordmark" ? "aspect-[1000/320]" : "aspect-square"} dangerouslySetInnerHTML={{ __html: svg }} />
                 <figcaption className="flex items-center justify-between px-3 py-2 text-xs">
                   <span className="capitalize">{kind} · {theme}</span>
@@ -132,7 +134,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Voice */}
       <Card>
-        <div className="flex items-center justify-between"><h2 className="text-2xl">Brand voice</h2><Button variant="secondary" disabled={pending} onClick={() => save({ voice }, "Voice guide")}>Save voice</Button></div>
+        <div className="flex items-center justify-between"><h2 className="text-[28px]">Brand voice</h2><Button variant="secondary" disabled={pending} onClick={() => save({ voice }, "Voice guide")}>Save voice</Button></div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="Tone (one per line)" htmlFor="tone"><Textarea id="tone" value={voice.tone.join("\n")} onChange={(e) => setVoice({ ...voice, tone: e.target.value.split("\n").filter(Boolean).slice(0, 8) })} /></Field>
           <Field label="Signature sign-off" htmlFor="so"><Input id="so" value={voice.signOff} onChange={(e) => setVoice({ ...voice, signOff: e.target.value })} maxLength={80} /></Field>
@@ -148,10 +150,10 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Bios */}
       <Card>
-        <h2 className="text-2xl">Bios</h2>
+        <h2 className="text-[28px]">Bios</h2>
         <ul className="mt-4 flex flex-col gap-3">
           {Object.entries(bios).map(([k, v]) => (
-            <li key={k} className="rounded-2xl border border-line p-3">
+            <li key={k} className="rounded-[var(--radius-item)] border border-line bg-surface p-3">
               <div className="flex justify-between text-xs text-muted"><span className="uppercase tracking-wide">{k === "gbp" ? "Google Business" : k}</span><span>{v.length}/{BIO_LIMITS[k as keyof typeof BIO_LIMITS]}</span></div>
               <p className="mt-1 whitespace-pre-wrap text-sm">{v}</p>
               <button className="mt-2 text-sm underline" onClick={() => { navigator.clipboard.writeText(v); toast({ message: "Copied", tone: "ok" }); }}>Copy</button>
@@ -163,7 +165,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
       {/* Hashtags + pillars */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
-          <h2 className="text-2xl">Hashtag sets</h2>
+          <h2 className="text-[28px]">Hashtag sets</h2>
           {Object.entries(tags).map(([k, list]) => (
             <div key={k} className="mt-3">
               <p className="text-xs uppercase tracking-wide text-muted">{k}</p>
@@ -172,7 +174,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
           ))}
         </Card>
         <Card>
-          <h2 className="text-2xl">Content pillars</h2>
+          <h2 className="text-[28px]">Content pillars</h2>
           <ul className="mt-3 flex flex-col gap-2 text-sm">
             {Object.entries(PILLAR_INFO).map(([k, v]) => <li key={k}><b>{v.label}</b> · {Math.round(v.share * 100)}%<br /><span className="text-muted">{v.why}</span></li>)}
           </ul>
@@ -181,7 +183,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Collateral */}
       <Card>
-        <h2 className="text-2xl">Menu, gift card &amp; business card</h2>
+        <h2 className="text-[28px]">Menu, gift card &amp; business card</h2>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           {(Object.keys(COLLATERAL_SIZE) as CollateralKind[]).map((k) => (
             <figure key={k}>
@@ -194,7 +196,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
 
       {/* Business details */}
       <Card>
-        <div className="flex items-center justify-between"><h2 className="text-2xl">Business details</h2>
+        <div className="flex items-center justify-between"><h2 className="text-[28px]">Business details</h2>
           <Button variant="secondary" disabled={pending} onClick={() => save({ ...biz, monthlyIncomeGoal: Number(biz.monthlyIncomeGoal) || 0, monthlyFixedCosts: Number(biz.monthlyFixedCosts) || 0, hoursPerWeek: Number(biz.hoursPerWeek) || 30, services }, "Business details")}>Save details</Button>
         </div>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -217,7 +219,7 @@ export function BrandEditor({ brand }: { brand: BrandProfile }) {
               <Input aria-label="Minutes" inputMode="numeric" value={s.durationMin} onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, durationMin: Number(e.target.value) || 0 } : x)))} />
               <Input aria-label="Price" inputMode="decimal" value={s.price} onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, price: Number(e.target.value) || 0 } : x)))} />
               <Input aria-label="Product cost" inputMode="decimal" value={s.cost ?? 0} onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, cost: Number(e.target.value) || 0 } : x)))} />
-              <button type="button" aria-label={`Remove ${s.name}`} className="px-3 rounded-full hover:bg-soft" onClick={() => setServices(services.filter((_, j) => j !== i))}>✕</button>
+              <button type="button" aria-label={`Remove ${s.name}`} className="px-3 rounded-full hover:bg-soft" onClick={() => setServices(services.filter((_, j) => j !== i))}><Icon name="close" size={18} /></button>
             </div>
           ))}
           <Button variant="ghost" onClick={() => setServices([...services, { id: crypto.randomUUID(), name: "New service", durationMin: 60, price: 0, cost: 0 }])}>Add service</Button>

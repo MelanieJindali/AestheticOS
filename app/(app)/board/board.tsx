@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Pillar, Platform, PostStatus, TemplateType } from "@/lib/types";
 import { POST_STATUSES } from "@/lib/types";
 import { approveAllAction, setStatusAction } from "@/app/actions/posts";
-import { Badge, Button, Empty, cx } from "@/components/ui";
+import { Badge, Button, Chip, Empty, ITEM, cx } from "@/components/ui";
 import { useToast } from "@/components/toast";
 import { PLATFORM_COLOR, PLATFORM_LABEL, templateLabel } from "@/lib/templates/formats";
 import { PILLAR_INFO } from "@/lib/brand/kit";
@@ -46,8 +46,8 @@ export function Board({ cards }: { cards: BoardCard[] }) {
     const list = cards.filter((c) => c.status === s);
     return (
       <section key={s} aria-label={LABEL[s]} onDragOver={(e) => { e.preventDefault(); setOver(s); }} onDragLeave={() => setOver(null)} onDrop={(e) => { e.preventDefault(); setOver(null); move(e.dataTransfer.getData("text/plain"), s); }}
-        className={cx("flex flex-col gap-2 rounded-3xl p-3 min-h-40 transition", over === s ? "bg-soft ring-2 ring-primary" : "bg-surface/60")}>
-        <h2 className="text-base font-semibold flex justify-between font-sans"><span>{LABEL[s]}</span><span className="text-muted font-normal">{list.length}</span></h2>
+        className={cx("flex flex-col gap-2 rounded-[var(--radius-card)] p-3 min-h-40 transition duration-200", over === s ? "bg-warm/60" : "bg-soft")}>
+        <h2 className="eyebrow flex justify-between px-1 pt-1 !font-sans"><span>{LABEL[s]}</span><span>{list.length}</span></h2>
         {s === "review" && review.length > 0 && (
           <Button className="min-h-11 text-sm" disabled={pending} onClick={() => start(async () => {
             const r = await approveAllAction(review.map((c) => c.id));
@@ -61,14 +61,14 @@ export function Board({ cards }: { cards: BoardCard[] }) {
     );
   };
 
-  if (cards.length === 0) return <Empty title="No content yet" action={<Link className="underline" href="/posts/batch">Batch your first month</Link>}>Generate a post or batch a whole month. Here&apos;s a tip: a great first post is a “Meet the artist”. People book people.</Empty>;
+  if (cards.length === 0) return <Empty title="Your calendar is a blank canvas" action={<Link className="text-primary underline underline-offset-4" href="/posts/batch">Let Muse sketch your month</Link>}>A lovely first post is a “Meet the artist”. People book people.</Empty>;
 
   return (
     <>
       {/* Mobile: one column at a time */}
       <div className="md:hidden">
         <div role="tablist" className="flex gap-2 overflow-x-auto no-scrollbar mb-3">
-          {POST_STATUSES.map((s) => <button key={s} role="tab" aria-selected={mobileCol === s} onClick={() => setMobileCol(s)} className={cx("shrink-0 rounded-full px-4 min-h-11 text-sm border", mobileCol === s ? "bg-primary text-on-primary border-primary" : "border-line bg-surface")}>{LABEL[s]} · {cards.filter((c) => c.status === s).length}</button>)}
+          {POST_STATUSES.map((s) => <Chip key={s} role="tab" aria-selected={mobileCol === s} active={mobileCol === s} onClick={() => setMobileCol(s)}>{LABEL[s]} · {cards.filter((c) => c.status === s).length}</Chip>)}
         </div>
         {column(mobileCol)}
       </div>
@@ -79,20 +79,20 @@ export function Board({ cards }: { cards: BoardCard[] }) {
 
 function CardItem({ c, onMove, disabled }: { c: BoardCard; onMove: (id: string, to: PostStatus) => void; disabled: boolean }) {
   return (
-    <article draggable onDragStart={(e) => e.dataTransfer.setData("text/plain", c.id)} className="rounded-2xl border border-line bg-surface p-3 shadow-sm cursor-grab active:cursor-grabbing">
+    <article draggable onDragStart={(e) => e.dataTransfer.setData("text/plain", c.id)} className={`${ITEM} p-3 cursor-grab active:cursor-grabbing hover:border-accent transition`}>
       <Link href={`/posts/${c.id}`} className="block">
         <p className="text-sm font-medium leading-snug line-clamp-3">{c.idea}</p>
         <p className="mt-1 text-xs text-muted">{PILLAR_INFO[c.pillar].label} · {templateLabel(c.templateType)}</p>
       </Link>
       <div className="mt-2 flex items-center gap-1.5 flex-wrap">
         {c.platforms.map((p) => <span key={p} title={PLATFORM_LABEL[p]} className="h-2.5 w-2.5 rounded-full" style={{ background: PLATFORM_COLOR[p] }} />)}
-        {c.blocked && <Badge tone="block">Fix first</Badge>}
+        {c.blocked && <Badge tone="block">Needs a fix</Badge>}
         {!c.blocked && c.warnings > 0 && <Badge tone="warn">{c.warnings} to check</Badge>}
         {c.missingAlt && <Badge tone="info">alt text</Badge>}
         {c.when && <span className="text-[11px] text-muted ml-auto">{new Date(c.when).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>}
       </div>
       <label className="sr-only" htmlFor={`mv-${c.id}`}>Move to</label>
-      <select id={`mv-${c.id}`} disabled={disabled} value="" onChange={(e) => e.target.value && onMove(c.id, e.target.value as PostStatus)} className="mt-2 w-full rounded-full border border-line bg-surface px-3 min-h-10 text-xs">
+      <select id={`mv-${c.id}`} disabled={disabled} value="" onChange={(e) => e.target.value && onMove(c.id, e.target.value as PostStatus)} className="mt-2 w-full rounded-full bg-soft px-3 min-h-10 text-xs text-muted">
         <option value="">Move to…</option>
         {POST_STATUSES.filter((s) => s !== c.status).map((s) => <option key={s} value={s}>{LABEL[s]}</option>)}
       </select>

@@ -25,7 +25,7 @@ export function ReadyActions({ itemId, caption, altText, posted, openUrl, schedu
       </div>
       {!posted && (
         <>
-          <Button variant="secondary" disabled={pending} onClick={() => start(async () => { const r = await markPublishedAction(itemId); if (r.ok) { toast({ message: "Marked as posted 🎉", tone: "ok" }); router.refresh(); } })}>Mark as posted</Button>
+          <Button variant="secondary" disabled={pending} onClick={() => start(async () => { const r = await markPublishedAction(itemId); if (r.ok) { toast({ message: "Beautiful. It's marked as posted.", tone: "ok" }); router.refresh(); } })}>Mark as posted</Button>
           <form className="flex gap-2 items-end" onSubmit={(e) => { e.preventDefault(); const [d, t] = when.split("T"); start(async () => { const r = await rescheduleAction(itemId, zonedTimeToUtc(d, t, tz)); toast(r.ok ? { message: "Rescheduled", tone: "ok" } : { message: r.error, tone: "error" }); router.refresh(); }); }}>
             <label className="flex-1 text-sm">Move to<Input type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} /></label>
             <Button variant="ghost" disabled={pending}>Move</Button>

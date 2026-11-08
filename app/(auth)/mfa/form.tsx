@@ -25,10 +25,10 @@ export function MfaForm({ factorId }: { factorId?: string }) {
           <details className="text-xs text-muted"><summary>Can&apos;t scan? Enter this key</summary><code className="break-all select-all">{enroll.secret}</code></details>
         </div>
       )}
-      {err && <p role="alert" className="text-sm text-red-700">{err}</p>}
+      {err && <p role="alert" className="text-sm text-danger">{err}</p>}
       <input type="hidden" name="factorId" value={id ?? ""} />
       <Field label="Code from your app" htmlFor="code"><Input id="code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required /></Field>
-      {state?.error && <p role="alert" className="text-sm text-red-700">{state.error}</p>}
+      {state?.error && <p role="alert" className="text-sm text-danger">{state.error}</p>}
       <Button disabled={pending || !id}>{pending ? "Verifying…" : "Verify"}</Button>
     </form>
   );

@@ -17,7 +17,7 @@ export async function appCtx() {
 
 /** Wrap an action: per-user rate limit + friendly, non-leaky errors. */
 export async function guard<T>(name: string, userId: string, fn: () => Promise<T>): Promise<ActionResult<T>> {
-  if (!rateLimit(`act:${name}:${userId}`, 120, 60_000).ok) return { ok: false, error: "You're going a little fast. Try again in a minute." };
+  if (!rateLimit(`act:${name}:${userId}`, 120, 60_000).ok) return { ok: false, error: "Let's take a breath. Try again in a minute." };
   try {
     const data = await fn();
     return { ok: true, data };
@@ -28,6 +28,6 @@ export async function guard<T>(name: string, userId: string, fn: () => Promise<T
     const msg = (e as Error)?.message ?? "";
     if (msg.includes("CONSENT_REQUIRED")) return { ok: false, error: "Before/after posts need a valid client consent record before scheduling.", code: "CONSENT_REQUIRED" };
     console.error(`action ${name} failed`, (e as Error)?.name);
-    return { ok: false, error: "Something went wrong. Your work is safe. Please try again." };
+    return { ok: false, error: "That didn't go through. Your work is safe, so let's try again." };
   }
 }

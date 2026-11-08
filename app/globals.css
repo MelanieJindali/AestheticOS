@@ -1,36 +1,86 @@
 @import "tailwindcss";
 
-/* App theme. Brand colours are injected per user as CSS variables in the app
-   layout (see lib/brand/theme.ts), so the whole OS gently adapts to the brand. */
+/* ------------------------------------------------------------------
+   Calm Luxe design system. Every UI colour, font and radius comes from
+   these tokens (see CLAUDE.md → Design system). User brand palettes are
+   used only inside their templates, posts and brand kit, never the UI.
+   ------------------------------------------------------------------ */
 :root {
-  --c-primary: #8a5a5f;
-  --c-secondary: #e8cfc8;
-  --c-accent: #c4a265;
-  --c-bg: #fbf6f3;
-  --c-ink: #2b1f20;
-  --c-on-primary: #ffffff;
-  --c-surface: #ffffff;
-  --c-muted: color-mix(in oklab, var(--c-ink) 60%, var(--c-bg));
-  --c-line: color-mix(in oklab, var(--c-ink) 12%, var(--c-bg));
-  --c-soft: color-mix(in oklab, var(--c-secondary) 35%, var(--c-bg));
-  --font-heading: var(--font-playfair), Georgia, serif;
-  --font-body: var(--font-inter), system-ui, sans-serif;
+  --pearl: #fbf8f4;
+  --linen: #f2ebe2;
+  --blush-clay: #ead7cc;
+  --sage-mist: #a8b5a2;
+  --deep-sage: #56664f;
+  --champagne: #c2a27a;
+  --bronze: #8a6a44;
+  --espresso: #2f2a26;
+  --taupe: #6e645c;
+  --hairline: #ece3d8;
+  --white: #ffffff;
+  --terracotta: #a3543f;
+  --track: #ede4d9;
+
+  /* semantic roles */
+  --c-bg: var(--pearl);
+  --c-surface: var(--white);
+  --c-soft: var(--linen);
+  --c-raised: var(--linen);
+  --c-ink: var(--espresso);
+  --c-muted: var(--taupe);
+  --c-line: var(--hairline);
+  --c-primary: var(--deep-sage);
+  --c-on-primary: var(--pearl);
+  --c-accent: var(--champagne);
+  --c-bronze: var(--bronze);
+  --c-calm: var(--sage-mist);
+  --c-warm: var(--blush-clay);
+  --c-danger: var(--terracotta);
+  --c-track: var(--track);
+  --c-backdrop: rgb(251 248 244 / 0.6);
   color-scheme: light;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --c-bg: #2f2a26;
+    --c-surface: #3a342f;
+    --c-soft: #3a342f;
+    --c-raised: #443d37;
+    --c-ink: #f2ebe2;
+    --c-muted: #c9bfb4;
+    --c-line: #4a433d;
+    --c-primary: #a8b5a2;
+    --c-on-primary: #2f2a26;
+    --c-bronze: #d4b48c;
+    --c-danger: #e0927c;
+    --c-track: #4a433d;
+    --c-backdrop: rgb(47 42 38 / 0.6);
+    color-scheme: dark;
+  }
+}
+
 @theme inline {
-  --color-primary: var(--c-primary);
-  --color-secondary: var(--c-secondary);
-  --color-accent: var(--c-accent);
   --color-bg: var(--c-bg);
-  --color-ink: var(--c-ink);
   --color-surface: var(--c-surface);
+  --color-soft: var(--c-soft);
+  --color-raised: var(--c-raised);
+  --color-ink: var(--c-ink);
   --color-muted: var(--c-muted);
   --color-line: var(--c-line);
-  --color-soft: var(--c-soft);
+  --color-primary: var(--c-primary);
   --color-on-primary: var(--c-on-primary);
-  --font-heading: var(--font-heading);
-  --font-sans: var(--font-body);
+  --color-accent: var(--c-accent);
+  --color-bronze: var(--c-bronze);
+  --color-calm: var(--c-calm);
+  --color-warm: var(--c-warm);
+  --color-danger: var(--c-danger);
+  --color-track: var(--c-track);
+  --font-heading: var(--font-cormorant), Georgia, serif;
+  --font-sans: var(--font-jost), system-ui, sans-serif;
+  --radius-card: 24px;
+  --radius-item: 18px;
+  --radius-input: 28px;
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html { -webkit-text-size-adjust: 100%; }
@@ -38,15 +88,31 @@ html, body { overflow-x: clip; }
 body {
   background: var(--c-bg);
   color: var(--c-ink);
-  font-family: var(--font-body);
+  font-family: var(--font-jost), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3 { font-family: var(--font-heading); letter-spacing: -0.01em; }
+h1, h2, h3 { font-family: var(--font-cormorant), Georgia, serif; font-weight: 500; letter-spacing: -0.01em; line-height: 1.15; }
+h1 em, h2 em { font-style: italic; color: var(--c-primary); }
 
-:focus-visible { outline: 3px solid var(--c-accent); outline-offset: 2px; border-radius: 6px; }
+:focus-visible { outline: 2px solid var(--c-primary); outline-offset: 3px; border-radius: 8px; }
+
+/* Signature motif: arch-topped frame */
+.arch { border-radius: 999px 999px 32px 32px; overflow: hidden; }
+
+/* Small uppercase label above headings */
+.eyebrow { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--c-muted); }
+
+/* Soft shimmer for loading placeholders */
+.shimmer { background: linear-gradient(90deg, var(--c-soft) 0%, var(--c-surface) 50%, var(--c-soft) 100%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 250ms var(--ease-calm) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
 .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0.75rem); }

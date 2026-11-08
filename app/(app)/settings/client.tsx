@@ -65,7 +65,7 @@ export function PushToggle({ vapidKey }: { vapidKey: string }) {
         setState("on");
         toast({ message: "Reminders switched on", tone: "ok" });
       } catch (e) { setState("error"); toast({ message: (e as Error).message, tone: "error" }); }
-    }}>{state === "on" ? "Push reminders on ✓" : "Turn on push reminders"}</Button>
+    }}>{state === "on" ? "Push reminders are on" : "Turn on push reminders"}</Button>
   );
 }
 
@@ -78,7 +78,7 @@ export function DeleteAccount() {
       <label htmlFor="del" className="sr-only">Type DELETE to confirm</label>
       <Input id="del" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Type DELETE to confirm" autoComplete="off" />
       <Button variant="danger" disabled={pending || confirm.trim().toUpperCase() !== "DELETE"}>{pending ? "Deleting…" : "Delete forever"}</Button>
-      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
     </form>
   );
 }

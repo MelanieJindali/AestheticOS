@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { appCtx } from "@/lib/action-ctx";
 import { Badge, Card, PageHeader } from "@/components/ui";
+import { Icon } from "@/components/icons";
 import { aiEnabled, env } from "@/lib/env";
 import { PLATFORM_LABEL } from "@/lib/templates/formats";
 import { PLATFORM_RULES } from "@/lib/posts/platforms";
@@ -16,21 +17,21 @@ export default async function Settings() {
   const demo = session.mode === "demo";
   return (
     <>
-      <PageHeader title="Settings" subtitle="Your accounts, privacy and data. You're in control." />
+      <PageHeader eyebrow="Settings" title={<>Privacy, <em>your way</em></>} subtitle="Your accounts and your data. Everything here is private to you, and you are always in control." />
       <div className="flex flex-col gap-4">
         <Card>
-          <h2 className="text-xl">Account</h2>
+          <h2 className="text-[22px]">Account</h2>
           <p className="text-sm mt-1">{demo ? "Demo sandbox (data is temporary)" : session.email}</p>
           <p className="text-sm text-muted">Two-step verification: <Badge tone="ok">On</Badge></p>
-          <form action={signOut} className="mt-3"><button className="rounded-full border border-line px-5 min-h-11 text-sm">Sign out</button></form>
+          <form action={signOut} className="mt-3"><button className="rounded-full border border-accent px-6 min-h-11 text-sm">Sign out</button></form>
         </Card>
 
         <Card>
-          <h2 className="text-xl">Connected accounts</h2>
+          <h2 className="text-[22px]">Connected accounts</h2>
           <p className="text-sm text-muted mt-1">We only ask for posting and basic insights permissions. Tokens are encrypted and never leave our server. Where a platform doesn&apos;t allow auto-posting, you get a Ready-to-Post package and a reminder instead.</p>
           <ul className="mt-3 flex flex-col gap-2">
             {accounts.map((a) => (
-              <li key={a.id} className="flex items-center justify-between gap-2 rounded-2xl border border-line p-3 text-sm">
+              <li key={a.id} className="flex items-center justify-between gap-2 rounded-[var(--radius-item)] border border-line bg-surface p-3 text-sm">
                 <span><b>{PLATFORM_LABEL[a.platform]}</b> · {a.accountLabel}<span className="block text-xs text-muted">Scopes: {a.scopes.join(", ") || "none"}</span></span>
                 <DisconnectButton id={a.id} />
               </li>
@@ -44,28 +45,29 @@ export default async function Settings() {
         </Card>
 
         <Card>
-          <h2 className="text-xl">Muse &amp; privacy</h2>
+          <h2 className="text-[22px] flex items-center gap-2"><Icon name="lock" /> Muse &amp; privacy</h2>
           <AiToggles aiProvider={settings.aiProvider} museCanUseClientData={settings.museCanUseClientData} aiAvailable={aiEnabled()} />
         </Card>
 
         <Card>
-          <h2 className="text-xl">Reminders</h2>
+          <h2 className="text-[22px]">Reminders</h2>
           <p className="text-sm text-muted mt-1">Get a nudge at posting time with a link to your Ready-to-Post package. Notifications never include your caption or client details.</p>
           <PushToggle vapidKey={env.vapidPublic} />
           <p className="text-sm mt-3"><a className="underline" href="/api/ics">Download calendar (.ics)</a>: works on every phone with no setup.</p>
         </Card>
 
         <Card>
-          <h2 className="text-xl">Your data</h2>
+          <h2 className="text-[22px] flex items-center gap-2"><Icon name="lock" /> Your data</h2>
+          <p className="text-sm text-muted mt-1">We never sell your data or show you ads. Client details stay out of AI, and you can take everything with you or erase it at any time.</p>
           <ul className="mt-2 flex flex-col gap-2 text-sm">
-            <li><a className="underline" href="/api/export" download>Export everything (JSON + images)</a></li>
-            <li><Link className="underline" href="/settings/audit">Activity log</Link>: logins, Muse actions, publishes and account changes.</li>
-            <li><Link className="underline" href="/privacy">Privacy policy</Link></li>
+            <li><a className="text-primary underline underline-offset-4" href="/api/export" download>Export everything (JSON + images)</a></li>
+            <li><Link className="text-primary underline underline-offset-4" href="/settings/audit">Activity log</Link>: logins, Muse actions, publishes and account changes.</li>
+            <li><Link className="text-primary underline underline-offset-4" href="/privacy">Privacy policy</Link></li>
           </ul>
         </Card>
 
-        <Card className="border-red-200">
-          <h2 className="text-xl text-red-800">Delete account</h2>
+        <Card className="border border-danger/30 bg-transparent">
+          <h2 className="text-[22px] text-danger">Delete account</h2>
           <p className="text-sm text-muted mt-1">Permanently deletes your brand, posts, consent records, images and activity log, and disconnects every social account. This can&apos;t be undone, so export first if you want a copy.</p>
           <DeleteAccount />
         </Card>

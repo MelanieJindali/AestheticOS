@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Platform, ScheduleItem } from "@/lib/types";
 import { rescheduleAction } from "@/app/actions/posts";
 import { Chip, cx } from "@/components/ui";
+import { Icon } from "@/components/icons";
 import { useToast } from "@/components/toast";
 import { PLATFORM_COLOR, PLATFORM_LABEL } from "@/lib/templates/formats";
 import { addDays, dayOfWeek, zonedTimeToUtc } from "@/lib/posts/platforms";
@@ -69,13 +70,11 @@ export function CalendarView({ items, tz, locale }: { items: CalItem[]; tz: stri
   return (
     <div className={cx(pending && "opacity-70")}>
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <div className="flex rounded-full border border-line overflow-hidden">
-          {(["week", "month"] as const).map((v) => <button key={v} onClick={() => setView(v)} aria-pressed={view === v} className={cx("px-4 min-h-11 text-sm capitalize", view === v ? "bg-primary text-on-primary" : "bg-surface")}>{v}</button>)}
-        </div>
-        <button className="rounded-full border border-line px-3 min-h-11" aria-label="Previous" onClick={() => setAnchor(view === "week" ? addDays(anchor, -7) : addDays(`${anchor.slice(0, 7)}-01`, -1))}>‹</button>
-        <button className="rounded-full border border-line px-3 min-h-11 text-sm" onClick={() => setAnchor(today)}>Today</button>
-        <button className="rounded-full border border-line px-3 min-h-11" aria-label="Next" onClick={() => setAnchor(view === "week" ? addDays(anchor, 7) : addDays(`${anchor.slice(0, 7)}-28`, 7))}>›</button>
-        <span className="font-heading text-xl ml-1">{title}</span>
+        {(["week", "month"] as const).map((v) => <Chip key={v} active={view === v} onClick={() => setView(v)} className="capitalize">{v}</Chip>)}
+        <button className="rounded-full h-11 w-11 grid place-items-center text-muted hover:text-ink" aria-label="Previous" onClick={() => setAnchor(view === "week" ? addDays(anchor, -7) : addDays(`${anchor.slice(0, 7)}-01`, -1))}><Icon name="back" /></button>
+        <button className="rounded-full px-3 min-h-11 text-sm text-primary" onClick={() => setAnchor(today)}>Today</button>
+        <button className="rounded-full h-11 w-11 grid place-items-center text-muted hover:text-ink" aria-label="Next" onClick={() => setAnchor(view === "week" ? addDays(anchor, 7) : addDays(`${anchor.slice(0, 7)}-28`, 7))}><Icon name="next" /></button>
+        <span className="font-heading text-[22px] ml-1">{title}</span>
       </div>
       <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3">
         <Chip active={!filter} onClick={() => setFilter(null)}>All</Chip>
@@ -89,12 +88,12 @@ export function CalendarView({ items, tz, locale }: { items: CalItem[]; tz: stri
           const inMonth = d.slice(0, 7) === anchor.slice(0, 7);
           return (
             <div key={d} onDragOver={(e) => { e.preventDefault(); setOverDay(d); }} onDragLeave={() => setOverDay(null)} onDrop={(e) => { e.preventDefault(); setOverDay(null); drop(e.dataTransfer.getData("text/plain"), d); }}
-              className={cx("rounded-2xl border p-2 flex flex-col gap-1.5", view === "week" ? "min-h-28" : "min-h-20", d === today ? "border-primary" : "border-line", overDay === d && "ring-2 ring-primary bg-soft", view === "month" && !inMonth && "opacity-50", emptyRun(d) && "bg-amber-50/60")}>
-              <div className="flex justify-between text-xs"><span className={cx(d === today && "font-bold text-primary")}>{view === "week" ? new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${d}T12:00:00Z`)) : Number(d.slice(8))}</span>{emptyRun(d) && <span className="text-amber-800">gap</span>}</div>
+              className={cx("rounded-[var(--radius-item)] p-2 flex flex-col gap-1.5 transition", view === "week" ? "min-h-28 bg-soft" : "min-h-20 bg-soft/60", d === today && "ring-1 ring-accent", overDay === d && "bg-warm/60", view === "month" && !inMonth && "opacity-50", emptyRun(d) && "bg-warm/40")}>
+              <div className="flex justify-between text-xs"><span className={cx("text-muted", d === today && "text-primary font-medium")}>{view === "week" ? new Intl.DateTimeFormat(locale, { weekday: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${d}T12:00:00Z`)) : Number(d.slice(8))}</span>{emptyRun(d) && <span className="text-bronze">gap</span>}</div>
               {list.map((it) => (
                 <Link key={it.id} href={it.mode === "ready_to_post" ? `/ready/${it.id}` : `/posts/${it.postId}`} draggable={it.state !== "published"} onDragStart={(e) => e.dataTransfer.setData("text/plain", it.id)}
-                  className="rounded-xl px-2 py-1.5 text-xs text-white leading-tight block" style={{ background: PLATFORM_COLOR[it.platform], opacity: it.state === "published" ? 0.55 : 1 }} title={`${PLATFORM_LABEL[it.platform]} · ${it.idea}`}>
-                  <span className="font-semibold">{it.hm}</span>{view === "week" && <> · {it.idea.slice(0, 48)}</>}
+                  className="rounded-xl bg-surface px-2 py-1.5 text-xs leading-tight flex gap-1.5 items-start" style={{ opacity: it.state === "published" ? 0.55 : 1 }} title={`${PLATFORM_LABEL[it.platform]} · ${it.idea}`}>
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full shrink-0" style={{ background: PLATFORM_COLOR[it.platform] }} aria-hidden /><span><span className="text-muted">{it.hm}</span>{view === "week" && <> · {it.idea.slice(0, 48)}</>}</span>
                 </Link>
               ))}
             </div>

@@ -16,14 +16,14 @@ export function SignaturePad({ onChange }: { onChange: (svg: string | null) => v
 
   return (
     <div>
-      <svg ref={ref} viewBox="0 0 600 200" className="w-full h-40 rounded-2xl border-2 border-dashed border-line bg-white touch-none" role="img" aria-label="Signature area. Draw with your finger."
+      <svg ref={ref} viewBox="0 0 600 200" className="w-full h-40 rounded-[var(--radius-item)] border border-dashed border-accent bg-white touch-none" role="img" aria-label="Signature area. Draw with your finger."
         onPointerDown={(e) => { (e.target as Element).setPointerCapture(e.pointerId); drawing.current = true; setPaths((p) => [...p, `M${point(e)}`]); }}
         onPointerMove={(e) => { if (!drawing.current) return; setPaths((p) => { const c = [...p]; c[c.length - 1] += ` L${point(e)}`; return c; }); }}
         onPointerUp={() => { drawing.current = false; setPaths((p) => { emit(p); return p; }); }}>
         {paths.map((d, i) => <path key={i} d={d} fill="none" stroke="#111" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />)}
         {!paths.length && <text x="300" y="110" textAnchor="middle" fill="#999" fontSize="20">Client signs here</text>}
       </svg>
-      <button type="button" className="mt-1 text-sm underline" onClick={() => { setPaths([]); emit([]); }}>Clear</button>
+      <button type="button" className="mt-1 text-sm text-primary" onClick={() => { setPaths([]); emit([]); }}>Clear</button>
     </div>
   );
 }

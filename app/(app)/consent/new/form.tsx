@@ -7,6 +7,7 @@ import { Button, Card, Chip, Field, Input, Select } from "@/components/ui";
 import { SignaturePad } from "@/components/signature-pad";
 import { useToast } from "@/components/toast";
 import { consentText } from "@/lib/consent-text";
+import { PrivateNote } from "@/components/icons";
 
 const PLATFORMS = [["instagram", "Instagram"], ["tiktok", "TikTok"], ["facebook", "Facebook"], ["gbp", "Google"], ["pinterest", "Pinterest"], ["linkedin", "LinkedIn"], ["youtube", "YouTube"]] as const;
 
@@ -29,11 +30,11 @@ export function ConsentForm({ businessName, postId }: { businessName: string; po
   return (
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-4">
-        <p className="text-xs uppercase tracking-widest text-muted">For the artist</p>
+        <div className="flex justify-between gap-2"><p className="eyebrow">For the artist</p><PrivateNote /></div>
         <Field label="Client alias" hint="Initials or a nickname only, e.g. “JK” or “Bride, June”. Never a full name or contact details." htmlFor="alias"><Input id="alias" value={alias} onChange={(e) => setAlias(e.target.value)} maxLength={24} /></Field>
       </Card>
       <Card className="flex flex-col gap-4">
-        <p className="text-xs uppercase tracking-widest text-muted">For the client: please read</p>
+        <p className="eyebrow">For the client · please read</p>
         <fieldset>
           <legend className="text-sm font-medium mb-2">What can be shared?</legend>
           <div className="flex flex-wrap gap-2">
@@ -53,7 +54,7 @@ export function ConsentForm({ businessName, postId }: { businessName: string; po
           <label className="flex gap-3 items-center min-h-11"><input type="checkbox" className="h-5 w-5" checked={tag} onChange={(e) => setTag(e.target.checked)} /> I can be tagged</label>
         </div>
         <Field label="For how long?" htmlFor="months"><Select id="months" value={months} onChange={(e) => setMonths(Number(e.target.value))}>{[3, 6, 12, 24].map((m) => <option key={m} value={m}>{m} months</option>)}</Select></Field>
-        <div className="rounded-2xl bg-soft p-4 text-[15px] leading-relaxed">{text[0].split(/(?<=\.) /).map((t) => <p key={t} className="mb-1.5">{t}</p>)}</div>
+        <div className="rounded-[var(--radius-item)] bg-surface border border-line p-5 text-[15px] leading-relaxed">{text[0].split(/(?<=\.) /).map((t) => <p key={t} className="mb-1.5">{t}</p>)}</div>
         <label className="flex gap-3 items-start text-sm"><input type="checkbox" className="mt-0.5 h-5 w-5" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} /> I have read this and I agree.</label>
         <SignaturePad onChange={setSig} />
         <Button disabled={pending || !alias.trim() || !scope.length || !sig || !agreed || (!all && !platforms.length)} onClick={() => start(async () => {

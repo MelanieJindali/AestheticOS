@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { Icon } from "./icons";
 
 /**
  * Re-encodes photos in the browser (canvas → JPEG) before upload, which drops
@@ -44,12 +45,12 @@ export function ImageUpload({ label, onUploaded, hint }: { label: string; onUplo
 
   return (
     <div>
-      <button type="button" onClick={() => input.current?.click()} disabled={busy} className="w-full rounded-2xl border border-dashed border-line bg-soft/50 px-4 min-h-14 text-sm hover:bg-soft">
-        {busy ? "Cleaning & uploading…" : label}
+      <button type="button" onClick={() => input.current?.click()} disabled={busy} className="w-full flex items-center justify-center gap-2 rounded-[var(--radius-item)] border border-dashed border-accent bg-surface px-4 min-h-14 text-sm text-muted hover:text-ink transition">
+        <Icon name="camera" /> {busy ? "Removing hidden data and uploading…" : label}
       </button>
       <input ref={input} type="file" accept="image/jpeg,image/png,image/webp,image/heic" className="sr-only" onChange={(e) => handle(e.target.files?.[0])} aria-label={label} />
       <p className="mt-1 text-xs text-muted">{hint ?? "Location and camera data are removed automatically."}</p>
-      {error && <p className="mt-1 text-xs text-red-700" role="alert">{error}</p>}
+      {error && <p className="mt-1 text-xs text-danger" role="alert">{error}</p>}
     </div>
   );
 }

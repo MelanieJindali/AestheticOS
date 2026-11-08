@@ -11,7 +11,7 @@ export default async function Templates() {
   const samples = Object.fromEntries(TEMPLATE_TYPES.map((t) => [t.type, sampleSlots(t.type, brand)]));
   return (
     <>
-      <PageHeader title="Template library" subtitle="Every template is themed to your brand kit. Colours, fonts and your name are locked in. Text and photos are yours to change." />
+      <PageHeader eyebrow="Create" title="Template library" subtitle="Every template is themed to your brand kit. Colours, fonts and your name are locked in. Text and photos are yours to change." />
       <TemplateLibrary brand={brand} samples={samples} />
     </>
   );

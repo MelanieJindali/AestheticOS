@@ -36,7 +36,7 @@ export default async function Ready({ params }: { params: Promise<{ id: string }
           </div>
         </div>
         <Card className="flex flex-col gap-4">
-          {item.state === "published" ? <Badge tone="ok">Posted ✓</Badge> : <Badge>{item.state === "reminded" ? "Reminder sent" : "Waiting"}</Badge>}
+          {item.state === "published" ? <Badge tone="ok">Posted</Badge> : <Badge>{item.state === "reminded" ? "Reminder sent" : "Waiting"}</Badge>}
           <ol className="text-sm list-decimal pl-5 flex flex-col gap-1">
             <li>Download the image{slides ? "s" : ""}.</li>
             <li>Copy the caption below.</li>

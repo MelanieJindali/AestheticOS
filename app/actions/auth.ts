@@ -1,6 +1,7 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { createClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { DEMO_COOKIE, clientIp, getSession, getStore, signDemoId } from "@/lib/auth/session";
@@ -37,11 +38,25 @@ export async function sendCode(_prev: R | null, formData: FormData): Promise<R> 
   const ip = await clientIp();
   const key = sha256(parsed.data).slice(0, 16);
   if (!rateLimit(`otp-ip:${ip}`, 10, 3_600_000).ok || !rateLimit(`otp-email:${key}`, 5, 3_600_000).ok) return { ok: false, error: "Too many attempts. Please wait a little and try again." };
-  const sb = await supabaseServer();
-  const { error } = await sb.auth.signInWithOtp({ email: parsed.data, options: { shouldCreateUser: true, emailRedirectTo: `${env.appUrl}/auth/confirm` } });
-  // Same response whether or not the account exists (no account enumeration).
-  if (error && error.status !== 429) console.error("otp send", error.status);
-  return { ok: true, message: "If that email can sign in, a 6-digit code is on its way.", data: { email: parsed.data } };
+  // Implicit-flow client for the email link: unlike PKCE, the link works in any
+  // browser or device (e.g. a phone's mail app). Two-step verification is still
+  // required right after, so a forwarded link alone can't open the account.
+  const sb = createClient(env.supabaseUrl, env.supabaseAnonKey, { auth: { flowType: "implicit", persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+  const { error } = await sb.auth.signInWithOtp({ email: parsed.data, options: { shouldCreateUser: true, emailRedirectTo: `${await appOrigin()}/auth/confirm` } });
+  if (error?.status === 429) return { ok: false, error: "We've sent a few sign-in emails in the last hour. Please use the most recent one, or try again in about an hour." };
+  // Otherwise the same response whether or not the account exists (no account enumeration).
+  if (error) console.error("otp send", error.status, error.code);
+  return { ok: true, message: "Check your inbox for a sign-in link from Aesthetic OS. Tap it on any device to continue.", data: { email: parsed.data } };
+}
+
+/** The origin the visitor is actually using (so the link returns to the same site). */
+async function appOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
+  const configured = new URL(env.appUrl);
+  const trusted = host === configured.host || /^[a-z0-9-]+\.vercel\.app$/.test(host) || /^localhost(:\d+)?$/.test(host);
+  if (!trusted) return configured.origin;
+  return `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
 }
 
 export async function verifyCode(_prev: R | null, formData: FormData): Promise<R> {

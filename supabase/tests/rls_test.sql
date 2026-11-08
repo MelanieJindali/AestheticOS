@@ -1,6 +1,5 @@
 -- RLS + consent-gate tests. Any failed assertion raises and aborts (ON_ERROR_STOP).
 \set ON_ERROR_STOP on
-grant all on all tables in schema public to service_role;
 
 insert into auth.users values ('00000000-0000-0000-0000-00000000000a','a@example.com'),('00000000-0000-0000-0000-00000000000b','b@example.com');
 
@@ -111,3 +110,12 @@ do $$ begin
 end $$;
 reset role;
 \echo ALL DATABASE TESTS PASSED
+-- 9. Service role can run the cron query and account deletion.
+set role service_role;
+do $$ begin
+  perform 1 from public.schedule_items where state = 'pending';
+  delete from public.audit_log where user_id = '00000000-0000-0000-0000-00000000000b';
+  raise notice 'ok: service role privileges';
+end $$;
+reset role;
+\echo SERVICE ROLE TESTS PASSED

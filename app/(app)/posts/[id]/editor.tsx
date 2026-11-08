@@ -7,7 +7,7 @@ import type { BrandProfile, ConsentRecord, MetricSnapshot, Post, PostVariant, Sc
 import {
   deletePostAction, logMetricAction, repurposeAction, setStatusAction, undoDeleteAction, updatePostFlagsAction, updateVariantAction,
 } from "@/app/actions/posts";
-import { Badge, Button, Card, Field, Input, Select, Textarea, cx } from "@/components/ui";
+import { Badge, Button, Card, Chip, Field, Input, Select, Textarea, cx } from "@/components/ui";
 import { TemplatePreview } from "@/components/template-preview";
 import { ImageUpload } from "@/components/image-upload";
 import { useToast } from "@/components/toast";
@@ -87,16 +87,16 @@ export function PostEditor(props: {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-2">
-        <Link href="/board" className="text-sm underline">← Content</Link>
+        <Link href="/board" className="text-sm text-primary">Back to pipeline</Link>
         <Badge>{STATUS_LABEL[post.status]}</Badge>
         <Badge tone="neutral">{PILLAR_INFO[post.pillar].label}</Badge>
         <Badge tone="neutral">{templateLabel(post.templateType)}</Badge>
         {post.seriesId && <Badge tone="info">Series</Badge>}
       </div>
-      <h1 className="text-2xl md:text-3xl text-primary">{post.idea}</h1>
+      <h1 className="text-[28px] md:text-[34px]">{post.idea}</h1>
 
       {/* Consent + disclosure */}
-      <Card className={cx("flex flex-col gap-3", consentBlock && "border-red-300")}>
+      <Card className={cx("flex flex-col gap-3", consentBlock && "border-danger/40")}>
         <div className="flex flex-wrap gap-4 text-sm">
           <label className="flex gap-2 items-center"><input type="checkbox" className="h-5 w-5" checked={post.isBeforeAfter} onChange={(e) => run(() => updatePostFlagsAction(post.id, { isBeforeAfter: e.target.checked }))} /> Before/after or client photo</label>
           <label className="flex gap-2 items-center"><input type="checkbox" className="h-5 w-5" checked={post.hasMaterialConnection} onChange={(e) => run(() => updatePostFlagsAction(post.id, { hasMaterialConnection: e.target.checked }))} /> Paid / gifted / affiliate</label>
@@ -109,7 +109,7 @@ export function PostEditor(props: {
                 {consents.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
               </Select>
             </Field>
-            <Link href={`/consent/new?post=${post.id}`} className="rounded-full border border-line px-4 min-h-12 grid place-items-center text-sm hover:bg-soft">Get a signature now</Link>
+            <Link href={`/consent/new?post=${post.id}`} className="rounded-full border border-accent px-5 min-h-12 grid place-items-center text-sm hover:bg-soft">Get a signature now</Link>
           </div>
         )}
       </Card>
@@ -117,10 +117,10 @@ export function PostEditor(props: {
       {/* Platform tabs */}
       <div role="tablist" aria-label="Platform versions" className="flex gap-2 overflow-x-auto no-scrollbar">
         {variants.map((x) => (
-          <button key={x.id} role="tab" aria-selected={x.id === v.id} onClick={() => setActive(x.id)} className={cx("shrink-0 rounded-full px-4 min-h-11 text-sm border", x.id === v.id ? "bg-primary text-on-primary border-primary" : "bg-surface border-line")}>
+          <Chip key={x.id} role="tab" aria-selected={x.id === v.id} active={x.id === v.id} onClick={() => setActive(x.id)}>
             {PLATFORM_LABEL[x.platform]}{x.kind !== "single" && x.kind !== "pin" ? ` · ${x.kind.replace("-", " ")}` : ""}
-            {x.compliance.some((c) => c.severity === "block") && <span className="ml-1" aria-label="has blocking issues">⛔</span>}
-          </button>
+            {x.compliance.some((c) => c.severity === "block") && <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-danger align-middle" aria-label="needs a fix" />}
+          </Chip>
         ))}
       </div>
 
@@ -139,7 +139,7 @@ export function PostEditor(props: {
             <TemplatePreview brand={brand} type={post.templateType} formatId={d.formatId} slots={resolvedSlots(d.slots)} label={d.altText} />
           )}
           <div className="flex gap-2 flex-wrap">
-            <a href={`/api/render/${v.id}?download`} className="rounded-full border border-line px-4 min-h-11 grid place-items-center text-sm hover:bg-soft">Download PNG</a>
+            <a href={`/api/render/${v.id}?download`} className="rounded-full border border-accent px-5 min-h-11 grid place-items-center text-sm hover:bg-soft">Download image</a>
             <Select aria-label="Format" value={d.formatId} onChange={(e) => edit({ formatId: e.target.value })} className="!min-h-11 !w-auto text-sm">
               {formats.map((f) => <option key={f.id} value={f.id}>{f.label} ({f.width}×{f.height})</option>)}
             </Select>
@@ -161,11 +161,11 @@ export function PostEditor(props: {
           )}
           {post.templateType === "before-after" ? (
             <div className="grid grid-cols-2 gap-3">
-              <ImageUpload label={d.slots.imageUrl ? "✓ Before" : "Before photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrl: ref } }); }} hint="Unedited, same light." />
-              <ImageUpload label={d.slots.imageUrlAfter ? "✓ After" : "After photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrlAfter: ref } }); }} hint="Metadata removed." />
+              <ImageUpload label={d.slots.imageUrl ? "Before · added" : "Before photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrl: ref } }); }} hint="Unedited, same light." />
+              <ImageUpload label={d.slots.imageUrlAfter ? "After · added" : "After photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrlAfter: ref } }); }} hint="Metadata removed." />
             </div>
           ) : (
-            ["service-spotlight", "meet-the-artist", "product"].includes(post.templateType) && <ImageUpload label={d.slots.imageUrl ? "✓ Photo (tap to replace)" : "Add photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrl: ref } }); }} />
+            ["service-spotlight", "meet-the-artist", "product"].includes(post.templateType) && <ImageUpload label={d.slots.imageUrl ? "Photo added · tap to replace" : "Add photo"} onUploaded={(ref, url) => { setMedia((m) => ({ ...m, [ref]: url })); edit({ slots: { ...d.slots, imageUrl: ref } }); }} />
           )}
           <Field label={`Caption · ${d.caption.length}/${rules!.captionMax}`} htmlFor="cap" hint={`The first ${rules!.foldAt} characters show before “…more”. ${rules!.note}`}>
             <Textarea id="cap" className="min-h-56" value={d.caption} onChange={(e) => edit({ caption: e.target.value })} />
@@ -179,9 +179,9 @@ export function PostEditor(props: {
             <Button variant="ghost" onClick={() => { navigator.clipboard.writeText(d.caption); toast({ message: "Caption copied", tone: "ok" }); }}>Copy</Button>
           </div>
 
-          <Card className="!p-4">
-            <h3 className="font-semibold text-sm">Muse checks</h3>
-            {v.compliance.length === 0 && brandCheck?.issues.length === 0 ? <p className="text-sm text-muted mt-1">All clear ✓</p> : (
+          <Card className="!p-5">
+            <p className="eyebrow !text-primary">Muse checks</p>
+            {v.compliance.length === 0 && brandCheck?.issues.length === 0 ? <p className="text-sm text-muted mt-1">All clear. This reads beautifully.</p> : (
               <ul className="mt-2 flex flex-col gap-2">
                 {[...v.compliance, ...(brandCheck?.issues ?? [])].map((c, i) => (
                   <li key={`${c.ruleId}-${i}`} className="text-sm">
@@ -199,9 +199,9 @@ export function PostEditor(props: {
 
       {/* Pipeline actions */}
       <Card className="flex flex-col gap-3">
-        <h2 className="text-xl">Next step</h2>
+        <h2 className="text-[22px]">Next step</h2>
         {(blockers.length > 0 || consentBlock) && (
-          <p className="text-sm text-red-800" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {consentBlock ? "This before/after post needs a linked consent record before it can be scheduled. " : ""}
             {blockers.length > 0 ? `${blockers.length} issue(s) must be fixed on: ${[...new Set(blockers.map((b) => PLATFORM_LABEL[b.platform]))].join(", ")}.` : ""}
           </p>
@@ -212,8 +212,8 @@ export function PostEditor(props: {
           {post.status !== "scheduled" && post.status !== "published" && <Button disabled={pending} onClick={() => run(() => setStatusAction(post.id, "scheduled"), "Scheduled. You'll get a Ready-to-Post reminder.")}>Approve &amp; schedule</Button>}
           {post.status === "scheduled" && <Button variant="secondary" disabled={pending} onClick={() => run(() => setStatusAction(post.id, "approved"), "Unscheduled")}>Unschedule</Button>}
           <Button variant="ghost" disabled={pending} onClick={() => run(() => repurposeAction(post.id), "Repurposed into a carousel, Reel script, Story sequence and pin")}>Repurpose</Button>
-          <Link href={`/muse?tab=validate&post=${post.id}`} className="rounded-full px-5 min-h-12 grid place-items-center hover:bg-soft">Ask Muse to review</Link>
-          <Button variant="ghost" className="text-red-800" disabled={pending} onClick={() => start(async () => {
+          <Link href={`/muse?tab=validate&post=${post.id}`} className="rounded-full px-5 min-h-11 grid place-items-center text-primary hover:bg-soft">Ask Muse to review</Link>
+          <Button variant="ghost" className="text-danger" disabled={pending} onClick={() => start(async () => {
             const r = await deletePostAction(post.id);
             if (!r.ok) return toast({ message: r.error, tone: "error" });
             toast({ message: "Post deleted", tone: "ok", undo: async () => { await undoDeleteAction(post.id); router.push(`/posts/${post.id}`); } });
@@ -242,7 +242,7 @@ function MetricsForm({ postId, platform, existing }: { postId: string; platform:
   const last = existing[existing.length - 1];
   return (
     <Card>
-      <h2 className="text-xl">How did it do?</h2>
+      <h2 className="text-[22px]">How did it do?</h2>
       {last && <p className="text-sm text-muted">Last logged: {last.reach} reach · {last.saves} saves · {last.bookings} bookings</p>}
       <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2">
         {(Object.keys(m) as (keyof typeof m)[]).map((k) => (

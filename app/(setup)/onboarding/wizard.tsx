@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { completeOnboarding } from "@/app/actions/brand";
+import { Icon } from "@/components/icons";
 import { Button, Chip, Field, Input, Select, Textarea, cx } from "@/components/ui";
 import { MOODS } from "@/lib/brand/moods";
 import { buildPalette } from "@/lib/brand/palette";
@@ -117,10 +118,10 @@ export function OnboardingWizard() {
         <span>Step {step + 1} of {STEPS.length}</span>
         <span>About {Math.max(1, 8 - step * 1.5).toFixed(0)} min left</span>
       </div>
-      <div className="mt-2 h-1.5 rounded-full bg-line overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={STEPS.length} aria-valuenow={step + 1}>
-        <div className="h-full bg-primary transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} />
+      <div className="mt-3 flex gap-2" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1} aria-label={`Step ${step + 1} of ${STEPS.length}`}>
+        {STEPS.map((_, i) => <span key={i} className={cx("h-1.5 rounded-full transition-all duration-300", i === step ? "w-8 bg-primary" : i < step ? "w-1.5 bg-accent" : "w-1.5 bg-line")} />)}
       </div>
-      <h1 className="mt-6 text-3xl text-primary">{STEPS[step]}</h1>
+      <h1 className="mt-8 text-[34px] md:text-[44px]">{STEPS[step]}</h1>
 
       <div className="mt-6 flex flex-col gap-5">
         {step === 0 && (
@@ -139,7 +140,7 @@ export function OnboardingWizard() {
                   <Input aria-label={`Service ${i + 1} name`} value={s.name} placeholder="Service" onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))} maxLength={50} />
                   <Input aria-label={`Service ${i + 1} minutes`} inputMode="numeric" value={s.durationMin} onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, durationMin: Number(e.target.value) || 0 } : x)))} />
                   <Input aria-label={`Service ${i + 1} price`} inputMode="decimal" value={s.price} onChange={(e) => setServices(services.map((x, j) => (j === i ? { ...x, price: Number(e.target.value) || 0 } : x)))} />
-                  <button type="button" aria-label={`Remove service ${i + 1}`} className="min-h-12 px-3 rounded-full hover:bg-soft" onClick={() => setServices(services.filter((_, j) => j !== i))}>✕</button>
+                  <button type="button" aria-label={`Remove service ${i + 1}`} className="min-h-12 px-3 rounded-full hover:bg-soft" onClick={() => setServices(services.filter((_, j) => j !== i))}><Icon name="close" size={18} /></button>
                 </div>
               ))}
               <p className="text-xs text-muted -mt-1">Name · minutes · price</p>
@@ -195,8 +196,8 @@ export function OnboardingWizard() {
                 const on = moods.includes(m.id);
                 return (
                   <button key={m.id} type="button" aria-pressed={on} onClick={() => setMoods(on ? moods.filter((x) => x !== m.id) : moods.length < 2 ? [...moods, m.id] : [moods[1], m.id])}
-                    className={cx("rounded-3xl border p-3 text-left transition", on ? "border-primary ring-2 ring-primary" : "border-line bg-surface")}>
-                    <div className="flex h-14 overflow-hidden rounded-2xl">{m.swatches.map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</div>
+                    className={cx("rounded-[var(--radius-card)] p-3 text-left transition duration-200", on ? "bg-soft ring-2 ring-primary" : "bg-soft/50")}>
+                    <div className="arch flex h-28">{m.swatches.map((c) => <span key={c} className="flex-1" style={{ background: c }} />)}</div>
                     <p className="mt-2 font-medium">{m.name}</p>
                     <p className="text-xs text-muted">{m.blurb}</p>
                   </button>
@@ -209,9 +210,9 @@ export function OnboardingWizard() {
             </label>
             {thumbs.length > 0 && <div className="flex gap-2 overflow-x-auto no-scrollbar">{thumbs.map((t, i) => /* eslint-disable-next-line @next/next/no-img-element */ <img key={i} src={t} alt="" className="h-16 w-16 rounded-xl object-cover" />)}</div>}
             {palette && (
-              <div className="rounded-3xl p-5 border border-line" style={{ background: palette.neutralLight, color: palette.neutralDark }} aria-live="polite">
+              <div className="rounded-[var(--radius-card)] p-5 border border-line" style={{ background: palette.neutralLight, color: palette.neutralDark }} aria-live="polite">
                 <p className="text-xs uppercase tracking-widest" style={{ color: palette.primary }}>Your palette preview</p>
-                <p className="mt-1 text-3xl" style={{ fontFamily: cssFontStack(pairing.heading, true), color: palette.primary }}>{businessName || "Your studio"}</p>
+                <p className="mt-1 text-[34px]" style={{ fontFamily: cssFontStack(pairing.heading, true), color: palette.primary }}>{businessName || "Your studio"}</p>
                 <p className="text-sm" style={{ fontFamily: cssFontStack(pairing.body) }}>{pairing.name}: {pairing.heading} + {pairing.body}</p>
                 <div className="mt-3 flex gap-2">{Object.values(palette).map((c) => <span key={c} className="h-9 w-9 rounded-full border border-black/10" style={{ background: c }} title={c} />)}</div>
               </div>
@@ -236,7 +237,7 @@ export function OnboardingWizard() {
                 {PLATFORMS.map(([v, l]) => <Chip key={v} active={platforms.includes(v)} onClick={() => setPlatforms(platforms.includes(v) ? platforms.filter((x) => x !== v) : platforms.length < 4 ? [...platforms, v] : platforms)}>{l}</Chip>)}
               </div>
             </fieldset>
-            <div className="rounded-3xl bg-soft p-5">
+            <div className="rounded-[var(--radius-card)] bg-soft p-5">
               <p className="font-heading text-xl text-primary">Ready to see it?</p>
               <p className="text-sm text-muted mt-1">We&apos;ll build your brand kit and draft 7 posts for this week, balanced across your content pillars. They&apos;ll wait in <b>Needs review</b> until you approve them.</p>
             </div>
@@ -244,7 +245,7 @@ export function OnboardingWizard() {
         )}
       </div>
 
-      {error && <p role="alert" className="mt-4 text-sm text-red-700">{error}</p>}
+      {error && <p role="alert" className="mt-4 text-sm text-danger">{error}</p>}
 
       <div className="mt-8 flex gap-3 justify-between">
         <Button type="button" variant="ghost" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0 || pending}>Back</Button>

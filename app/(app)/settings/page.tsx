@@ -7,6 +7,8 @@ import { PLATFORM_LABEL } from "@/lib/templates/formats";
 import { PLATFORM_RULES } from "@/lib/posts/platforms";
 import { signOut } from "@/app/actions/auth";
 import { AiToggles, ConnectButtons, DeleteAccount, DisconnectButton, PushToggle } from "./client";
+import { SecurityPanel, type FactorRow } from "./security";
+import { supabaseServer } from "@/lib/db/supabase";
 import type { Platform } from "@/lib/types";
 
 export const metadata = { title: "Settings" };
@@ -15,6 +17,11 @@ export default async function Settings() {
   const { store, userId, settings, session } = await appCtx();
   const accounts = (await store.list("connected_accounts", userId)).filter((a) => !a.revokedAt);
   const demo = session.mode === "demo";
+  let factors: FactorRow[] = [];
+  if (!demo) {
+    const { data } = await (await supabaseServer()).auth.mfa.listFactors();
+    factors = (data?.totp ?? []).filter((f) => f.status === "verified").map((f) => ({ id: f.id, name: f.friendly_name || "Authenticator app", created: new Date(f.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) }));
+  }
   return (
     <>
       <PageHeader eyebrow="Settings" title={<>Privacy, <em>your way</em></>} subtitle="Your accounts and your data. Everything here is private to you, and you are always in control." />
@@ -22,8 +29,9 @@ export default async function Settings() {
         <Card>
           <h2 className="text-[22px]">Account</h2>
           <p className="text-sm mt-1">{demo ? "Demo sandbox (data is temporary)" : session.email}</p>
-          <p className="text-sm text-muted">Two-step verification: <Badge tone="ok">On</Badge></p>
-          <form action={signOut} className="mt-3"><button className="rounded-full border border-accent px-6 min-h-11 text-sm">Sign out</button></form>
+          <h3 className="mt-4 font-medium">Two-step verification <Badge tone="ok">On</Badge></h3>
+          {demo ? <p className="text-sm text-muted">Required for every real account. Demo accounts skip it.</p> : <SecurityPanel factors={factors} />}
+          <form action={signOut} className="mt-4"><button className="rounded-full border border-accent px-6 min-h-11 text-sm">Sign out</button></form>
         </Card>
 
         <Card>

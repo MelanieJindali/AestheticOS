@@ -2,26 +2,37 @@
 // loader and constellation progress. Pure SVG/CSS, all original artwork.
 // Ambient pieces are aria-hidden and fall back to still under reduced motion.
 
-/** Crescent moon whose inner curve becomes a leaf sprig, with the guiding star. */
-export function LogoSymbol({ size = 28, className }: { size?: number; className?: string }) {
+/**
+ * Brand symbol, exactly as on the Celestial Garden brand board: a fine-line
+ * crescent whose inner curve becomes a sprig of three almond leaves, with the
+ * guiding four-point star. Strokes scale per the guide (≈1.5px at 48px, 2px at
+ * 112px, never below 1.1px) so it stays crisp from 16px favicons to hero size.
+ */
+export function LogoSymbol({ size = 28, className, title }: { size?: number; className?: string; title?: string }) {
+  const px = Math.max(1.1, Math.min(2.2, 1.5 + (size - 48) * (0.5 / 64)));
+  const u = (px * 100) / size; // stroke in viewBox units
+  const ink = "var(--c-primary)";
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden className={className} fill="none" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M50 12 A38 38 0 0 0 50 88 A40 40 0 0 1 50 12 Z" stroke="var(--c-primary)" strokeWidth="5" />
-      <path d="M44 80 C 56 66, 60 50, 66 34" stroke="var(--c-primary)" strokeWidth="5" />
-      <path d="M53 62 c7 -2 12 1 14 6 M58 48 c-6 -3 -8 -8 -7 -13" stroke="var(--c-primary)" strokeWidth="4" />
+    <svg width={size} height={size} viewBox="0 0 100 100" className={className} fill="none" role={title ? "img" : undefined} aria-label={title} aria-hidden={title ? undefined : true}>
+      <path d="M50 12 A38 38 0 0 0 50 88 A40 40 0 0 1 50 12 Z" stroke={ink} strokeWidth={u} strokeLinejoin="round" />
+      <path d="M44 80 C 56 66, 60 50, 66 34" stroke={ink} strokeWidth={u * 0.89} strokeLinecap="round" />
+      <path d="M52 66 c6 -8 14 -8 18 -6 c-4 6 -12 9 -18 6z" stroke={ink} strokeWidth={u * 0.78} />
+      <path d="M57 53 c-8 -4 -12 -10 -12 -16 c7 2 11 8 12 16z" stroke={ink} strokeWidth={u * 0.78} />
+      <path d="M62 42 c5 -8 12 -10 17 -9 c-3 6 -10 10 -17 9z" stroke={ink} strokeWidth={u * 0.78} />
       <path d="M80 8 L82.5 15.5 L90 18 L82.5 20.5 L80 28 L77.5 20.5 L70 18 L77.5 15.5 Z" fill="var(--c-accent)" />
     </svg>
   );
 }
 
-/** Horizontal lockup: symbol + "Aesthetic OS" (OS in italic). */
+/** Horizontal lockup from the brand board: symbol, "Aesthetic OS" (OS italic), optional bronze tagline. */
 export function Logo({ size = 28, tagline = false }: { size?: number; tagline?: boolean }) {
+  const word = size * 0.59; // board: 66px wordmark beside a 112px symbol
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className="inline-flex items-center" style={{ gap: size * 0.23 }}>
       <LogoSymbol size={size} />
-      <span className="flex flex-col leading-none">
-        <span className="font-heading font-medium tracking-[0.02em]" style={{ fontSize: size * 0.85 }}>Aesthetic <em className="em">OS</em></span>
-        {tagline && <span className="mt-1 text-[10px] uppercase tracking-[2.5px] text-muted">Your business, beautifully guided</span>}
+      <span className="flex flex-col" style={{ gap: size * 0.07 }}>
+        <span className="font-heading font-medium leading-none" style={{ fontSize: Math.max(18, word), letterSpacing: "0.5px" }}>Aesthetic <em className="em">OS</em></span>
+        {tagline && <span className="uppercase leading-none text-bronze" style={{ fontSize: Math.max(10, size * 0.125), letterSpacing: Math.max(2.5, size * 0.031) }}>Your business, beautifully guided</span>}
       </span>
     </span>
   );

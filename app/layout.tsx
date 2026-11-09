@@ -6,7 +6,10 @@ export const metadata: Metadata = {
   title: { default: "Aesthetic OS", template: "%s · Aesthetic OS" },
   description: "A calm, secure business operating system for health & beauty solopreneurs.",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", apple: "/icon-192.png" },
+  icons: {
+    icon: [{ url: "/icon.svg", media: "(prefers-color-scheme: light)" }, { url: "/icon-twilight.svg", media: "(prefers-color-scheme: dark)" }],
+    apple: "/apple-touch-icon.png",
+  },
   appleWebApp: { capable: true, title: "Aesthetic OS", statusBarStyle: "default" },
   robots: { index: true, follow: true },
   referrer: "strict-origin-when-cross-origin",

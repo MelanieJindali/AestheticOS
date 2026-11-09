@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { appCtx } from "@/lib/action-ctx";
-import { Badge, Card, Empty, ITEM, LinkButton, ProgressRing } from "@/components/ui";
-import { Icon, PrivateNote } from "@/components/icons";
+import { Badge, Card, Empty, ITEM, LinkButton } from "@/components/ui";
+import { Constellation, Fireflies, LogoSymbol, Sprig } from "@/components/garden";
+import { PrivateNote } from "@/components/icons";
 import { nextBestActions } from "@/lib/muse/suggest";
 import { PLATFORM_COLOR, PLATFORM_LABEL } from "@/lib/templates/formats";
 import { QuickCapture, TaskList, GoalForm, AcceptSuggestion } from "./client";
@@ -29,15 +30,17 @@ export default async function Home() {
   const dateLabel = new Intl.DateTimeFormat(brand.locale, { weekday: "long", day: "numeric", month: "long", timeZone: tz }).format(now);
   const [focus, ...more] = suggestions;
   return (
-    <div className="flex flex-col gap-8">
-      <header className="rise">
+    <div className="relative flex flex-col gap-8 stagger">
+      <Fireflies count={6} className="-mx-6 -mt-6 h-64" />
+      <Sprig className="absolute -right-4 -top-4 opacity-60" width={110} />
+      <header className="relative">
         <p className="eyebrow">{dateLabel}</p>
-        <h1 className="text-[34px] md:text-[44px] mt-1">{greeting}{brand.ownerFirstName ? <>, <em>{brand.ownerFirstName}</em></> : null}</h1>
+        <h1 className="text-[36px] md:text-[44px] mt-1">{greeting}{brand.ownerFirstName ? <>,<br /><em>{brand.ownerFirstName}</em></> : null}</h1>
       </header>
 
       {focus ? (
-        <Card className="rise">
-          <p className="eyebrow !text-primary flex items-center gap-2"><Icon name="muse" size={16} /> Gentle focus</p>
+        <Card>
+          <p className="eyebrow !text-primary flex items-center gap-2"><span className="halo inline-grid"><LogoSymbol size={24} /></span> Muse · today&apos;s gentle focus</p>
           <p className="font-heading text-[26px] mt-2 leading-snug">{focus.title}</p>
           <p className="text-sm text-muted mt-2">{focus.why}</p>
           <div className="flex gap-2 mt-5 flex-wrap">
@@ -74,14 +77,12 @@ export default async function Home() {
         </section>
 
         <section aria-labelledby="week-h">
-          <h2 id="week-h" className="text-[22px] mb-3">This week&apos;s intention</h2>
+          <h2 id="week-h" className="text-[22px] mb-3">This week&apos;s garden</h2>
           {goal ? (
-            <div className="flex gap-5 items-start">
-              <ProgressRing value={goal.progress} label={`Weekly intention ${Math.round(goal.progress * 100)}% complete`} />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium">{goal.title}</p>
-                <TaskList tasks={goalTasks.slice(0, 3)} />
-              </div>
+            <div className="glass rounded-[20px] p-4">
+              <Constellation total={Math.max(goalTasks.length, 3)} done={goalTasks.filter((t) => t.done).length} label={`Weekly intention: ${goalTasks.filter((t) => t.done).length} of ${goalTasks.length} tasks bloomed`} />
+              <p className="text-sm mt-2">Intention: <span className="text-primary">{goal.title}</span></p>
+              <TaskList tasks={goalTasks.slice(0, 3)} />
             </div>
           ) : (
             <GoalForm />

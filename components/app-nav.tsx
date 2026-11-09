@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon, type IconName } from "./icons";
 import { cx } from "./ui";
+import { Logo, LogoSymbol } from "./garden";
 
 const MAIN: { href: string; label: string; icon: IconName; match: string[] }[] = [
   { href: "/home", label: "Today", icon: "today", match: ["/home"] },
@@ -23,9 +24,10 @@ export function AppNav({ businessName, demo }: { businessName: string; demo: boo
   const isActive = (m: string[]) => m.some((p) => path === p || path.startsWith(`${p}/`));
   return (
     <>
-      <nav aria-label="Main" className="hidden md:flex fixed inset-y-0 left-0 w-64 flex-col gap-1 border-r border-line bg-bg p-6">
-        <Link href="/home" className="font-heading text-[28px] leading-tight mb-1">{businessName}</Link>
-        <p className="eyebrow mb-8">Aesthetic OS{demo ? " · Demo" : ""}</p>
+      <nav aria-label="Main" className="nav-glass hidden md:flex fixed inset-y-0 left-0 w-64 flex-col gap-1 border-r p-6">
+        <Link href="/home" className="mb-6" aria-label="Aesthetic OS home"><Logo size={26} /></Link>
+        <p className="font-heading text-[22px] leading-tight">{businessName}</p>
+        <p className="eyebrow mb-8">{demo ? "Demo studio" : "Your studio"}</p>
         {MAIN.map((i) => (
           <Link key={i.href} href={i.href} aria-current={isActive(i.match) ? "page" : undefined} className={cx("flex items-center gap-3 rounded-full px-4 min-h-11 transition", isActive(i.match) ? "text-primary bg-soft" : "text-muted hover:text-ink")}>
             <Icon name={i.icon} /> {i.label}
@@ -37,7 +39,7 @@ export function AppNav({ businessName, demo }: { businessName: string; demo: boo
           ))}
         </div>
       </nav>
-      <nav aria-label="Main" className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-line bg-bg/95 backdrop-blur safe-bottom">
+      <nav aria-label="Main" className="nav-glass md:hidden fixed bottom-0 inset-x-0 z-40 border-t safe-bottom">
         <ul className="grid grid-cols-5">
           {MAIN.map((i) => (
             <li key={i.href}>
@@ -55,7 +57,7 @@ export function AppNav({ businessName, demo }: { businessName: string; demo: boo
 export function MobileTopBar({ businessName }: { businessName: string }) {
   return (
     <div className="md:hidden flex items-center justify-between px-6 pt-5">
-      <Link href="/home" className="font-heading text-[22px]">{businessName}</Link>
+      <Link href="/home" className="flex items-center gap-2 font-heading text-[22px]"><LogoSymbol size={24} /> {businessName}</Link>
       <Link href="/settings" className="grid place-items-center h-11 w-11 rounded-full text-muted hover:text-ink" aria-label="Settings and privacy"><Icon name="settings" /></Link>
     </div>
   );

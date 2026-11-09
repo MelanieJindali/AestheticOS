@@ -59,6 +59,16 @@ async function appOrigin(): Promise<string> {
   return `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
 }
 
+/** "Continue with Google": OAuth (PKCE) through Supabase; MFA is still required after. */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  if (formData.get("age") !== "on") redirect("/sign-in?error=age");
+  if (!rateLimit(`oauth-ip:${await clientIp()}`, 20, 3_600_000).ok) redirect("/sign-in?error=rate");
+  const sb = await supabaseServer();
+  const { data, error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${await appOrigin()}/auth/confirm`, skipBrowserRedirect: true, queryParams: { prompt: "select_account" } } });
+  if (error || !data.url) redirect("/sign-in?error=google");
+  redirect(data.url);
+}
+
 export async function verifyCode(_prev: R | null, formData: FormData): Promise<R> {
   const email = Email.safeParse(formData.get("email"));
   const code = Code.safeParse(formData.get("code"));

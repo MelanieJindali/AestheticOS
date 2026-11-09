@@ -4,7 +4,7 @@ import {
   Playfair_Display, Syne, Unbounded, Work_Sans,
 } from "next/font/google";
 
-// UI fonts (Calm Luxe): Jost for body/UI, Cormorant Garamond for headings.
+// UI fonts (Celestial Garden): Jost for body/UI, Cormorant Garamond for headings.
 const jost = Jost({ subsets: ["latin"], display: "swap", variable: "--font-jost", weight: ["300", "400", "500"], preload: true });
 const inter = Inter({ subsets: ["latin"], display: "swap", preload: false, variable: "--font-inter" });
 const cormorant = Cormorant_Garamond({ subsets: ["latin"], display: "swap", preload: true, weight: ["400", "500", "600"], style: ["normal", "italic"], variable: "--font-cormorant" });

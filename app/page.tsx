@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth/session";
 import { isDemoMode } from "@/lib/env";
 import { startDemo } from "@/app/actions/auth";
 import { Icon } from "@/components/icons";
+import { Fireflies, Logo, LogoSymbol, Sprig } from "@/components/garden";
 
 const FEATURES = [
   ["A brand kit in ten minutes", "Palette, fonts, logos, voice and bios, shaped by your aesthetic."],
@@ -19,9 +20,9 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
     <main id="main" className="min-h-dvh flex flex-col">
       <section className="flex-1 mx-auto max-w-5xl w-full px-6 py-14 md:py-24 grid md:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
         <div className="rise">
-          <p className="eyebrow">Aesthetic OS</p>
-          <h1 className="mt-3 text-[44px] md:text-[56px] leading-[1.05]">Your brand, your content, <em>your calm.</em></h1>
-          <p className="mt-6 text-[18px] text-muted max-w-lg">The gentle business companion for estheticians, lash and brow artists, nail techs, stylists, therapists and wellness pros.</p>
+          <Logo size={30} tagline />
+          <h1 className="mt-8 text-[44px] md:text-[56px] leading-[1.05]">Your business, <em>beautifully guided.</em></h1>
+          <p className="mt-6 text-[18px] text-muted max-w-lg">Your brand, your content, your calm. The gentle business companion for estheticians, lash and brow artists, nail techs, stylists, therapists and wellness pros.</p>
           {sp.deleted && <p role="status" className="mt-6 rounded-[var(--radius-item)] bg-soft p-4 text-sm">Your account and all of its data have been permanently deleted, and connected platforms were disconnected.</p>}
           {sp.error === "rate" && <p role="alert" className="mt-6 rounded-[var(--radius-item)] bg-soft p-4 text-sm">Lots of demo visits from your network just now. Please try again a little later.</p>}
           <div className="mt-10 flex flex-col sm:flex-row gap-3">
@@ -35,14 +36,16 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
             )}
           </div>
         </div>
-        <div className="arch bg-warm h-[420px] hidden md:grid place-items-center" aria-hidden>
-          <svg viewBox="0 0 120 160" width="180" className="text-accent" fill="none" stroke="currentColor" strokeWidth="1"><path d="M20 150V70a40 40 0 0 1 80 0v80M60 30v10M10 150h100" /><path d="M60 95c-12-8-12-24 0-32 12 8 12 24 0 32zm0 0v30" className="text-primary" stroke="var(--c-primary)" /></svg>
+        <div className="relative arch h-[440px] hidden md:grid place-items-center" style={{ background: "radial-gradient(circle at 50% 30%, var(--c-warm), var(--c-lilac))" }} aria-hidden>
+          <Fireflies count={7} seed={3} />
+          <Sprig className="absolute -left-2 bottom-6 opacity-70" width={130} />
+          <span className="halo"><LogoSymbol size={150} /></span>
         </div>
       </section>
       <section className="mx-auto max-w-5xl w-full px-6 pb-16">
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {FEATURES.map(([t, d]) => (
-            <li key={t} className="rounded-[var(--radius-card)] bg-soft p-6"><p className="font-heading text-[22px]">{t}</p><p className="mt-2 text-sm text-muted">{d}</p></li>
+            <li key={t} className="glass rounded-[var(--radius-card)] p-6"><p className="font-heading text-[22px]">{t}</p><p className="mt-2 text-sm text-muted">{d}</p></li>
           ))}
         </ul>
       </section>

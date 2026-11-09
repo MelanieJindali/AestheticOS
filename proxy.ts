@@ -24,7 +24,8 @@ function csp(nonce: string) {
     "media-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    // Sign-in redirects: Supabase Auth → Google account chooser.
+    `form-action 'self'${storage} https://accounts.google.com`,
     "frame-ancestors 'none'",
     "upgrade-insecure-requests",
   ].join("; ");

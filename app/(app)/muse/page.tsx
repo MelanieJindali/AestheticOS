@@ -1,6 +1,7 @@
 import { appCtx } from "@/lib/action-ctx";
 import { PageHeader } from "@/components/ui";
 import { Icon } from "@/components/icons";
+import { Fireflies, LogoSymbol } from "@/components/garden";
 import { llmAvailable } from "@/lib/ai/gateway";
 import { pricingCheck } from "@/lib/muse/pricing";
 import { monthlyReview } from "@/lib/muse/suggest";
@@ -21,6 +22,10 @@ export default async function Muse({ searchParams }: { searchParams: Promise<{ t
   const pricing = pricingCheck(brand);
   return (
     <>
+      <div className="relative -mx-6 mb-2 h-28 grid place-items-center" aria-hidden>
+        <Fireflies count={6} seed={11} />
+        <span className="halo grid place-items-center h-20 w-20 rounded-full glass"><LogoSymbol size={44} /></span>
+      </div>
       <PageHeader eyebrow="Your business companion" title={<>Muse, <em>at your side</em></>} subtitle="Muse explains its thinking, never publishes without you, and never gives medical advice." action={<span className="inline-flex items-center gap-1.5 text-sm text-muted"><Icon name="lock" size={16} /> Private</span>} />
       <MuseTools
         initialTab={sp.tab ?? (prefill ? "validate" : "ideate")}

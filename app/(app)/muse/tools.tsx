@@ -157,7 +157,7 @@ function Ask() {
       {a && (
         <div className="flex flex-col gap-3" aria-live="polite">
           <p className="self-end max-w-[85%] rounded-[18px] rounded-br-md bg-primary text-on-primary px-4 py-3 text-sm">{q}</p>
-          <div className="max-w-[90%] rounded-[18px] rounded-bl-md bg-surface border border-line px-4 py-3 text-sm">
+          <div className="max-w-[90%] rounded-[18px] rounded-bl-md bg-cool border border-line px-4 py-3 text-sm">
           <p className="whitespace-pre-wrap">{a.answer}</p>
           <p className="mt-2 text-xs text-muted">Why: {a.reasoning}</p>
           </div>

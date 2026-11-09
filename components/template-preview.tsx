@@ -11,7 +11,7 @@ export type PreviewBrand = Pick<BrandProfile, "businessName" | "handle" | "palet
 /** Live, brand-themed preview: the exact JSX tree used for PNG export, scaled to fit. */
 export function TemplatePreview({ brand, type, formatId, slots, slideIndex, slideCount, className, label, arch }: {
   brand: PreviewBrand; type: TemplateType; formatId: string; slots: SlotValues; slideIndex?: number; slideCount?: number; className?: string; label?: string;
-  /** Present inside the Calm Luxe arch frame (gallery and hero use). */
+  /** Present inside the Celestial Garden arch frame (gallery and hero use). */
   arch?: boolean;
 }) {
   const format = formatById(formatId);

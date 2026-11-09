@@ -126,3 +126,63 @@ export async function signOut(): Promise<void> {
   await sb.auth.signOut({ scope: "local" });
   redirect("/sign-in");
 }
+
+// ---------------------------------------------------------------------------
+// Two-step verification management (Settings → Security). All require an
+// existing aal2 session; at least one verified factor must always remain.
+// ---------------------------------------------------------------------------
+
+async function aal2Client() {
+  const session = await getSession();
+  if (!session || session.mode !== "supabase" || session.aal !== "aal2") throw new Error("Please sign in again.");
+  return { session, sb: await supabaseServer() };
+}
+
+export async function enrollBackupFactor(): Promise<R> {
+  try {
+    const { sb } = await aal2Client();
+    const { data: list } = await sb.auth.mfa.listFactors();
+    for (const f of list?.all ?? []) if (f.status === "unverified") await sb.auth.mfa.unenroll({ factorId: f.id });
+    if ((list?.totp?.length ?? 0) >= 4) return { ok: false, error: "You already have the maximum number of authenticators." };
+    const { data, error } = await sb.auth.mfa.enroll({ factorType: "totp", friendlyName: `Backup ${new Date().toISOString().slice(0, 16).replace("T", " ")}` });
+    if (error || !data) return { ok: false, error: "Couldn't start setup. Please try again." };
+    return { ok: true, data: { factorId: data.id, qr: data.totp.qr_code, secret: data.totp.secret } };
+  } catch (e) { return { ok: false, error: (e as Error).message }; }
+}
+
+export async function confirmBackupFactor(factorId: string, code: string): Promise<R> {
+  try {
+    const { session, sb } = await aal2Client();
+    if (!z.string().uuid().safeParse(factorId).success || !Code.safeParse(code).success) return { ok: false, error: "Enter the 6-digit code from the new app." };
+    const key = `mfa-add:${session.userId}`;
+    if (!rateLimit(key, 10, 900_000).ok) return { ok: false, error: "Too many attempts. Please wait 15 minutes." };
+    const { error } = await sb.auth.mfa.challengeAndVerify({ factorId, code });
+    if (error) { recordFailure(key); return { ok: false, error: "That code didn't match. Codes refresh every 30 seconds." }; }
+    await audit(await getStore(session), session.userId, "user", "auth.mfa_factor_added");
+    return { ok: true, message: "Backup authenticator added." };
+  } catch (e) { return { ok: false, error: (e as Error).message }; }
+}
+
+export async function removeFactor(factorId: string): Promise<R> {
+  try {
+    const { session, sb } = await aal2Client();
+    if (!z.string().uuid().safeParse(factorId).success) return { ok: false, error: "Not found." };
+    const { data } = await sb.auth.mfa.listFactors();
+    const verified = (data?.totp ?? []).filter((f) => f.status === "verified");
+    if (verified.length <= 1 && verified.some((f) => f.id === factorId)) return { ok: false, error: "Keep at least one authenticator. Add a new one first, then remove this." };
+    const { error } = await sb.auth.mfa.unenroll({ factorId });
+    if (error) return { ok: false, error: "Couldn't remove it. Please try again." };
+    await audit(await getStore(session), session.userId, "user", "auth.mfa_factor_removed");
+    return { ok: true, message: "Authenticator removed." };
+  } catch (e) { return { ok: false, error: (e as Error).message }; }
+}
+
+/** Ends every session on every device (e.g. a lost phone). */
+export async function signOutEverywhere(): Promise<void> {
+  const session = await getSession();
+  if (session?.mode === "supabase") {
+    await audit(await getStore(session), session.userId, "user", "auth.signed_out_everywhere");
+    await (await supabaseServer()).auth.signOut({ scope: "global" });
+  }
+  redirect("/sign-in");
+}

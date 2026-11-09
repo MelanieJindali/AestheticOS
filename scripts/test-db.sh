@@ -16,6 +16,6 @@ trap 'run "$PGBIN/pg_ctl" -D "$DIR/data" -m fast stop >/dev/null; rm -rf "$DIR"'
 PSQL="psql -h /tmp -p $PORT -U postgres -v ON_ERROR_STOP=1 -q"
 $PSQL -c "create database aos"
 $PSQL -d aos -f supabase/tests/auth_stub.sql
-for m in supabase/migrations/0001_init.sql supabase/migrations/0003_service_role_grants.sql; do $PSQL -d aos -f "$m"; done
+for m in supabase/migrations/0001_init.sql supabase/migrations/0003_service_role_grants.sql supabase/migrations/0004_harden_functions.sql; do $PSQL -d aos -f "$m"; done
 $PSQL -d aos -f supabase/tests/rls_test.sql
 if [ -f supabase/seed.sql ]; then $PSQL -d aos -f supabase/seed.sql && echo "seed.sql applied cleanly"; fi

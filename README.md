@@ -51,6 +51,8 @@ DEMO_MODE=true SESSION_SECRET=$(openssl rand -base64 48) npm start
 
 Demo mode keeps a per-visitor sandbox in memory. It resets after 6 hours or on restart and holds no real data. It's ideal as the public "try it" page for your product.
 
+`npm install` also turns on the repo's pre-commit hook (`.githooks/pre-commit`), which blocks commits containing env files, keys, logs or likely secrets. Outside a git checkout this step does nothing.
+
 ## Production setup
 
 Everything below has a free tier. You only pay once usage grows.

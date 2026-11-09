@@ -1,5 +1,6 @@
 -- Optional: run the reminder worker every 5 minutes from Supabase itself (free).
--- Requires the pg_cron and pg_net extensions (Database → Extensions).
+-- Requires the pg_cron and pg_net extensions (Database → Extensions; install pg_net
+-- in the `extensions` schema, not `public`: create extension pg_net with schema extensions).
 -- Replace the URL and secret, then run in the SQL editor. Store the secret in Vault in production.
 select cron.schedule(
   'aesthetic-os-reminders',

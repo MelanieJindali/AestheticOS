@@ -119,3 +119,22 @@ do $$ begin
 end $$;
 reset role;
 \echo SERVICE ROLE TESTS PASSED
+-- 10. Internal functions aren't callable by API roles, but the consent gate still works.
+set role authenticated;
+select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-00000000000a', false);
+do $$ begin
+  begin
+    perform public.consent_is_valid('30000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000000a');
+    raise exception 'TEST FAILED: consent_is_valid callable';
+  exception when insufficient_privilege then raise notice 'ok: helper not callable';
+  end;
+  begin
+    insert into public.posts (user_id,pillar,template_type,source,idea,status,is_before_after) values ('00000000-0000-0000-0000-00000000000a','transformation','before-after','pillar','x','scheduled',true);
+    raise exception 'TEST FAILED: gate bypassed';
+  exception when check_violation then raise notice 'ok: consent gate still enforced';
+  end;
+  insert into public.posts (user_id,pillar,template_type,source,idea) values ('00000000-0000-0000-0000-00000000000a','education','tip','pillar','fine');
+  raise notice 'ok: normal writes still work';
+end $$;
+reset role;
+\echo HARDENING TESTS PASSED
